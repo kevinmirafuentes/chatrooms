@@ -19,6 +19,7 @@ Vue.component('chatrooms', require('./components/chat/Chatrooms.vue'));
 Vue.component('chatroom', require('./components/chat/Chatroom.vue'));
 Vue.component('chatroom-message', require('./components/chat/ChatroomMessage.vue'));
 Vue.component('chatroom-user', require('./components/chat/ChatroomUser.vue'));
+Vue.component('create-chatroom-modal', require('./components/chat/CreateChatroomModal.vue'));
 
 const app = new Vue({
     el: '#app'

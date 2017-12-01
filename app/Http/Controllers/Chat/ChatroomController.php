@@ -6,47 +6,24 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Chat\Chatroom;
 use App\Models\User;
+use App\Http\Requests\Chat\CreateChatroomRequest;
 
 class ChatroomController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware('auth');
-	}
-
     public function index(Request $request)
     {
-    	$chatrooms = $request->user()->chatrooms()->get();
+    	$chatrooms = $request->user()->chatrooms()->latest()->get();
     	return response()->json($chatrooms, 200);
     }
 
-    public function messages(Chatroom $chatroom, Request $request)
+    public function store(CreateChatroomRequest $request)
     {
-    	$messages = $chatroom
-                        ->messages()
-                        ->with('user')
-                        ->latest()
-                        ->paginate();
+    	$chatroom = $request->user()->owned_chatrooms()->create(['name' => $request->name]);
+    	$users = $request->users;
+    	$users[] = $request->user()->id;
+    	$chatroom->users()->attach((array) $users);
 
-        $results = [];
-        foreach ($messages as $message) {
-            $results[] = [
-                'id' => $message->id,
-                'body' => $message->body,
-                'created_at' => $message->created_at,
-                'self_owned' => $message->selfOwned,
-                'user' => [
-                    'id' => $message->user->id,
-                    'name' => $message->user->name,
-                    'first_name' => $message->user->first_name,
-                    'last_name' => $message->user->last_name,
-                ]
-            ];
-        }
-
-    	return response()->json([
-            'messages' => $results,
-            'next_page_url' => $messages->nextPageUrl(),
-        ], 200);
+    	$users = $request->users;
+    	return $chatroom;
     }
 }

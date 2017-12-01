@@ -8,7 +8,9 @@ use App\Models\User;
 class Message extends Model
 {
     protected $fillable = [
-    	'body'
+    	'body',
+        'user_id',
+        'chatroom_id',
     ];
 
     protected $appends = [

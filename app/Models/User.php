@@ -34,8 +34,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function owned_chatrooms()
+    {
+        return $this->hasMany(Chatroom::class);
+    }
+
     public function chatrooms()
     {
         return $this->belongsToMany(Chatroom::class)->withTimestamps();
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 }

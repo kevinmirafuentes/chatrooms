@@ -12,6 +12,8 @@
 						class="chatroom__form-input"
 						cols="30"
 						rows="4"
+						v-model="body"
+						@keydown="handleMessageInput"
 					></textarea>
 					<span class="chatroom__form-helptext">
 						Hit return to send or Ctrl + Return for a new line
@@ -24,9 +26,7 @@
 					<a href="#"><small>Readonly all..</small></a>
 				</div>
 				<div class="clearfix"></div>
-				<chatroom-user></chatroom-user>
-				<chatroom-user></chatroom-user>
-				<chatroom-user></chatroom-user>
+				<chatroom-user v-for="member in members" :key="member.id" :member="member"></chatroom-user>
 			</div>
 		</div>
 		<div v-if="!error && chatroom == null" class="chatroom__placeholder">
@@ -47,22 +47,78 @@
 				chatroom: null,
 				messages: [],
 				nextPageUrl: null,
-				error: null
+				error: null,
+				members: [],
+				body: ''
 			}
 		},
 		methods: {
 			loadMessages (chatroomId, event) {
 				if (event) {
-					event.preventDefault();
+					event.preventDefault()
 				}
 
 				axios.get('/chat/chatrooms/'+chatroomId+'/messages')
 				.then((response) => {
-					Bus.$emit('chatroom.messages.loaded', response.data);
+					Bus.$emit('chatroom.messages.loaded', response.data)
 				})
 				.catch(() => {
 					this.error = 'Failed to load messages.'
 				})
+			},
+			handleMessageInput (e) {
+				if (e.keyCode === 13 && !e.shiftKey) {
+					e.preventDefault()
+					this.send()
+				}
+			},
+			buildTempMessage () {
+				let tempId = Date.now();
+
+				return {
+					id: tempId,
+					body: this.body,
+					self_owned: true,
+					sending: true,
+					failed: false,
+					user: {
+						name: Backend.user.name
+					}
+				}
+			},
+			send () {
+				if (!this.body || this.body.trim === '') {
+					return
+				}
+
+				let tempMessage = this.buildTempMessage()
+				Bus.$emit('message.added', tempMessage)
+			},
+			scrollToLatest () {
+				this.$nextTick(function () {
+					this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+				})
+			},
+			sendMessagePool () {
+				for (var i = this.messages.length; i > 0; i--) {
+					let message = this.messages[i-1]
+
+					if (message.failed || !message.sending) {
+						continue
+					}
+
+					axios.post('/chat/chatrooms/'+this.chatroom.id+'/messages', {
+						body: message.body
+					})
+					.then((response) => {
+						Bus.$emit('message.saved', message)
+						this.sendMessagePool()
+					})
+					.catch(() => {
+						Bus.$emit('message.failed', message)
+						this.sendMessagePool()
+					})
+				}
 			}
 		},
 		mounted () {
@@ -70,16 +126,44 @@
 				this.chatroom = chatroom
 				this.loadMessages(chatroom.id)
 			})
-
-			Bus.$on('chatroom.messages.loaded', (data) => {
+			.$on('chatroom.messages.loaded', (data) => {
 				this.messages = data.messages
+				this.members = data.members
 				this.nextPageUrl = data.next_page_url
 				this.error = null
+				this.scrollToLatest()
+			})
+			.$on('message.added', (message) => {
+				this.messages.unshift(message)
+				this.body = null
 
-				let self = this
-				setTimeout(() => {
-					self.$refs.messages.scrollTop = self.$refs.messages.scrollHeight
-				}, 500)
+				this.scrollToLatest()
+				this.sendMessagePool()
+			})
+			.$on('message.saved', (message) => {
+				for (var i = 0; i < this.messages.length; i++) {
+					if (this.messages[i].id === message.id) {
+						this.messages[i].failed = false
+						this.messages[i].sending = false
+					}
+				}
+			})
+			.$on('message.failed', (message) => {
+				for (var i = 0; i < this.messages.length; i++) {
+					if (this.messages[i].id === message.id) {
+						this.messages[i].failed = true
+						this.messages[i].sending = false
+						this.scrollToLatest()
+					}
+				}
+			})
+
+			// when message is resending, remove from list
+			// and set as the latest message
+			// message added is then triggered again to
+			// attach the message and send to server
+			Bus.$on('message.resending', (message) => {
+				console.log('message is removed', message)
 			})
 		}
 	}
@@ -96,7 +180,7 @@
 			height: 400px;
 			max-height: 400px;
 			overflow-y: auto;
-			border-bottom: 1px solid #d3e0e9;
+			border: 1px solid #d3e0e9;
 			margin-bottom: 20px;
 		}
 

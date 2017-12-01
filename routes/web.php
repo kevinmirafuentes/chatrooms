@@ -23,6 +23,9 @@ Auth::routes();
 
 Route::group(['prefix' => 'chat'], function() {
 	Route::get('/', 'Chat\ChatController@index');
+	Route::get('/users', 'Chat\UserController@index');
 	Route::get('/chatrooms', 'Chat\ChatroomController@index');
-	Route::get('/chatrooms/{chatroom}/messages', 'Chat\ChatroomController@messages');
+	Route::post('/chatrooms', 'Chat\ChatroomController@store');
+	Route::get('/chatrooms/{chatroom}/messages', 'Chat\MessageController@index');
+	Route::post('/chatrooms/{chatroom}/messages', 'Chat\MessageController@store');
 });
