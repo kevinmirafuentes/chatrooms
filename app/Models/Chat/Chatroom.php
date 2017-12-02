@@ -7,9 +7,10 @@ use App\Models\User;
 
 class Chatroom extends Model
 {
-	public $incrementing = false;
+	const COLLABORATOR_PERMISSION = 0;
+	const READONLY_PERMISSION = 1;
 
-    // identifies if group chat or single
+	public $incrementing = false;
 
 	protected $fillable = [
 		'name'
@@ -51,7 +52,9 @@ class Chatroom extends Model
 
 	public function users()
 	{
-		return $this->belongsToMany(User::class)->withTimestamps();
+		return $this->belongsToMany(User::class)
+					->withPivot('permission')
+					->withTimestamps();
 	}
 
 	public function messages()

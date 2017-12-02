@@ -6,7 +6,7 @@
 				<div class="chatroom__messages" ref="messages">
 					<chatroom-message v-for="message in messages.slice().reverse()" :key="message.id" :message="message"></chatroom-message>
 				</div>
-				<form>
+				<form v-if="permission !== 1">
 					<textarea
 						id="body"
 						class="chatroom__form-input"
@@ -19,6 +19,8 @@
 						Hit return to send or Ctrl + Return for a new line
 					</span>
 				</form>
+
+				<span v-if="permission === 1">You are currently on Readonly permission.</span>
 			</div>
 			<div class="col-md-4">
 				<h3>Members</h3>
@@ -40,6 +42,7 @@
 
 <script>
 	import Bus from '../../bus'
+	import moment from 'moment'
 
 	export default {
 		data () {
@@ -49,7 +52,8 @@
 				nextPageUrl: null,
 				error: null,
 				members: [],
-				body: ''
+				body: '',
+				permission: 0
 			}
 		},
 		methods: {
@@ -81,6 +85,7 @@
 					self_owned: true,
 					sending: true,
 					failed: false,
+					created_at: moment().utc(0).format('YYYY-MM-DD HH:mm:ss'),
 					user: {
 						name: Backend.user.name
 					}
@@ -124,7 +129,10 @@
 		mounted () {
 			Bus.$on('chatroom.selected', (chatroom) => {
 				this.chatroom = chatroom
+				this.permission = chatroom.pivot.permission
 				this.loadMessages(chatroom.id)
+				console.log('chat room selected')
+				Bus.$emit('chatroom.entered', chatroom.id)
 			})
 			.$on('chatroom.messages.loaded', (data) => {
 				this.messages = data.messages

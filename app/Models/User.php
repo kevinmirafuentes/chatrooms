@@ -41,11 +41,18 @@ class User extends Authenticatable
 
     public function chatrooms()
     {
-        return $this->belongsToMany(Chatroom::class)->withTimestamps();
+        return $this->belongsToMany(Chatroom::class)
+                ->withPivot('permission')
+                ->withTimestamps();
     }
 
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function canJoinRoom($id)
+    {
+        return $this->chatrooms()->where('chatroom_id', $id)->count() > 0;
     }
 }

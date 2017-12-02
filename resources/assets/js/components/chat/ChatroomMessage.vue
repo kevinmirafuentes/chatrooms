@@ -4,7 +4,8 @@
 		'chatroom-message--is-sending': message.sending
 	}">
 		<div class="chatroom-message__head">
-			<span>{{ message.user.name }}</span>
+			<div>{{ message.user.name }}</div>
+			<div class="chatroom-message__date">{{ message.created_at }}</div>
 		</div>
 		<div class="chatroom-message__body">{{ message.body }}</div>
 		<div class="chatroom-message__error text-right" v-if="typeof message.failed != 'undefined' && message.failed">
@@ -48,6 +49,11 @@
 
 		&:last-child {
 			border-bottom: none;
+		}
+
+		&__date {
+			font-size: 10px;
+			font-weight: normal;
 		}
 	}
 </style>

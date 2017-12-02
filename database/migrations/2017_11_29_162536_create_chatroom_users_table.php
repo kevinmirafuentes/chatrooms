@@ -31,6 +31,6 @@ class CreateChatroomUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chatroom_users');
+        Schema::dropIfExists('chatroom_user');
     }
 }

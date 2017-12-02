@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Chat\Chatroom;
 use App\Models\Chat\Message;
+use App\Events\Chat\MessageCreated;
 
 class MessageController extends Controller
 {
@@ -24,38 +25,41 @@ class MessageController extends Controller
 
         $results = [];
         foreach ($messages as $message) {
-            $results[] = [
-                'id' => $message->id,
-                'body' => $message->body,
-                'created_at' => $message->created_at,
-                'self_owned' => $message->selfOwned,
-                'sending' => false,
-                'failed' => false,
-                'user' => [
-                    'id' => $message->user->id,
-                    'name' => $message->user->name,
-                    'first_name' => $message->user->first_name,
-                    'last_name' => $message->user->last_name,
-                ]
+            $results[] = $message->formatForJson();
+        }
+
+        $users = $chatroom
+                    ->users()
+                    ->where('user_id', '<>', $request->user()->id)
+                    ->get();
+
+        $member_users = [];
+
+        foreach ($users as $user) {
+            $member_users[] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'permission' => $user->pivot->permission,
             ];
         }
 
-        $member_users = $chatroom
+        $permission = 0;
+
+        $current_user = $chatroom
                             ->users()
-                            ->where('user_id', '<>', $request->user()->id)
-                            ->select([
-                                'users.id',
-                                'users.name',
-                                'users.first_name',
-                                'users.last_name',
-                                'users.email'
-                            ])
-                            ->get();
+                            ->where('user_id', '=', $request->user()->id)
+                            ->first();
+
+        $permission = $current_user->pivot->permission;
 
         return response()->json([
             'messages' => $results,
             'next_page_url' => $messages->nextPageUrl(),
             'members' => $member_users,
+            'permission' => $permission,
         ], 200);
     }
 
@@ -67,6 +71,8 @@ class MessageController extends Controller
             'body' => $request->body
         ]);
 
-        return response()->json($message, 200);
+        broadcast(new MessageCreated($message))->toOthers();
+
+        return response()->json($message->formatForJson(), 200);
     }
 }

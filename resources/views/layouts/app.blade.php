@@ -23,6 +23,9 @@
                 'first_name' => auth()->check() ? auth()->user()->first_name : null,
                 'last_name' => auth()->check() ? auth()->user()->last_name : null,
             ],
+            'keys' => [
+                'pusher' => config('broadcasting.connections.pusher.key'),
+            ],
         ]) !!};
     </script>
 </head>
