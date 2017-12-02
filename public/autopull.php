@@ -10,8 +10,8 @@
 
 	// The commands
 	$commands = array(
-		'echo $PWD',
-		'whoami',
+		//'echo $PWD',
+		//'whoami',
 		'git reset --hard',
 		'git pull "https://webmelnet:mhel3110@github.com/kevinmirafuentes/chatrooms.git" master',
 		'git status',
