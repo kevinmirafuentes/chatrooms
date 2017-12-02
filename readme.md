@@ -9,7 +9,7 @@ Basic chat application that provides readonly permissions to members of a chatro
 	- Run `npm run watch` so that js update are compiled
 	- You may need to update the `cluster` on  resources/assets/js/bootstrap.js
 	- Done!
-
+        - Test
 
 
 
