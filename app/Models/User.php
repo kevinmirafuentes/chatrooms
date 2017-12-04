@@ -60,4 +60,14 @@ class User extends Authenticatable
     {
         return $this->owned_chatrooms()->where('id', $chatroom_id)->count() > 0;
     }
+
+    public function canWriteMessage(Chatroom $chatroom)
+    {
+        $chatroom_user = $chatroom->users()->where('user_id', $this->id)->first();
+        if ($chatroom_user) {
+            $permission = $chatroom_user->pivot->permission;
+            return Chatroom::COLLABORATOR_PERMISSION === $permission;
+        }
+        return false;
+    }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Chat;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Chat\Chatroom;
+use App\Events\Chat\UserPermissionChanged;
 
 class UserController extends Controller
 {
@@ -25,7 +27,8 @@ class UserController extends Controller
         if ($request->user()->canChangePermission($chatroom)) {
             $users = User::whereIn('id', $users)->get();
             foreach ($users as $user) {
-                $user->chatrooms()->updateExistingPivot($chatroom, ['permission' => 1]);
+                $user->chatrooms()->updateExistingPivot($chatroom, ['permission' => Chatroom::READONLY_PERMISSION]);
+                broadcast(new UserPermissionChanged(1, $chatroom));
             }
         }
 
@@ -40,7 +43,8 @@ class UserController extends Controller
         if ($request->user()->canChangePermission($chatroom)) {
             $users = User::whereIn('id', $users)->get();
             foreach ($users as $user) {
-                $user->chatrooms()->updateExistingPivot($chatroom, ['permission' => 0]);
+                $user->chatrooms()->updateExistingPivot($chatroom, ['permission' => Chatroom::COLLABORATOR_PERMISSION]);
+                broadcast(new UserPermissionChanged(0, $chatroom));
             }
         }
     }

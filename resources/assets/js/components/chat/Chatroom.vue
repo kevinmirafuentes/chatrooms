@@ -24,11 +24,11 @@
 			</div>
 			<div class="col-md-4">
 				<h3>Members</h3>
-				<div class="pull-right" v-if="permission == 1">
+				<div class="pull-right" v-if="this.isOwner">
 					<a href="#" @click="changeUsersToReadonly"><small>Readonly all..</small></a>
 				</div>
 				<div class="clearfix"></div>
-				<chatroom-user v-for="member in members" :key="member.id" :permission="permission" :member="member"></chatroom-user>
+				<chatroom-user v-for="member in members" :key="member.id" :permission="permission" :member="member" :isOwner="isOwner"></chatroom-user>
 			</div>
 		</div>
 		<div v-if="!error && chatroom == null" class="chatroom__placeholder">
@@ -57,7 +57,7 @@
 			}
 		},
 		methods: {
-			loadMessages (chatroomId, event) {
+		loadMessages (chatroomId, event) {
 				if (event) {
 					event.preventDefault()
 				}
@@ -152,6 +152,7 @@
 			Bus.$on('chatroom.selected', (chatroom) => {
 				this.chatroom = chatroom
 				this.permission = chatroom.pivot.permission
+				this.isOwner = chatroom.user_id == Backend.user.id
 				this.loadMessages(chatroom.id)
 				Bus.$emit('chatroom.entered', chatroom.id)
 			})
@@ -205,6 +206,11 @@
 							})
 					}
 				})
+			})
+			.$on('user-permission.changed', (e) => {
+				if (e.chatroom == this.chatroom.id) {
+					this.permission = e.permission;
+				}
 			})
 
 			// when message is resending, remove from list

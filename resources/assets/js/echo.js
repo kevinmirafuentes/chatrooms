@@ -19,5 +19,8 @@ Bus.$on('chatroom.entered', (chatroomId) => {
 		.listen('Chat.MessageCreated', (e) => {
 			Bus.$emit('message.added', e.message)
 		})
+		.listen('Chat.UserPermissionChanged', (e) => {
+			Bus.$emit('user-permission.changed', e);
+		})
 })
 

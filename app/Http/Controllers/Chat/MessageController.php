@@ -65,6 +65,10 @@ class MessageController extends Controller
 
     public function store(Chatroom $chatroom, Request $request)
     {
+        if (!$request->user()->canWriteMessage($chatroom)) {
+            return response()->json('Unauthorized.', 401);
+        }
+
         $message = Message::create([
             'user_id' => $request->user()->id,
             'chatroom_id' => $chatroom->id,

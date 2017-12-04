@@ -63792,6 +63792,8 @@ __WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.entered', fu
 		// console.log('user left chatroom '+chatroomId, user)
 	}).listen('Chat.MessageCreated', function (e) {
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
+	}).listen('Chat.UserPermissionChanged', function (e) {
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e);
 	});
 });
 
@@ -64543,6 +64545,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.selected', function (chatroom) {
 			_this4.chatroom = chatroom;
 			_this4.permission = chatroom.pivot.permission;
+			_this4.isOwner = chatroom.user_id == Backend.user.id;
 			_this4.loadMessages(chatroom.id);
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.entered', chatroom.id);
 		}).$on('chatroom.messages.loaded', function (data) {
@@ -64590,6 +64593,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					});
 				}
 			});
+		}).$on('user-permission.changed', function (e) {
+			if (e.chatroom == _this4.chatroom.id) {
+				_this4.permission = e.permission;
+			}
 		});
 
 		// when message is resending, remove from list
@@ -64931,7 +64938,7 @@ var render = function() {
             [
               _c("h3", [_vm._v("Members")]),
               _vm._v(" "),
-              _vm.permission == 1
+              this.isOwner
                 ? _c("div", { staticClass: "pull-right" }, [
                     _c(
                       "a",
@@ -64949,7 +64956,11 @@ var render = function() {
               _vm._l(_vm.members, function(member) {
                 return _c("chatroom-user", {
                   key: member.id,
-                  attrs: { permission: _vm.permission, member: member }
+                  attrs: {
+                    permission: _vm.permission,
+                    member: member,
+                    isOwner: _vm.isOwner
+                  }
                 })
               })
             ],
@@ -65274,7 +65285,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['member', 'permission'],
+	props: ['member', 'permission', 'isOwner'],
 	methods: {
 		toggleReadonlyPermission: function toggleReadonlyPermission(user) {
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.toggle-readonly', user.id);
@@ -65295,7 +65306,7 @@ var render = function() {
       _vm._v(_vm._s(_vm.member.name))
     ]),
     _vm._v(" "),
-    _vm.permission == 1
+    _vm.isOwner
       ? _c(
           "a",
           {

@@ -5,7 +5,7 @@
 			class="pull-right chatroom-member__readonly badge"
 			:class="{ 'chatroom-member__readonly--active': member.permission === 1 }"
 			@click="toggleReadonlyPermission(member)"
-			v-if="permission == 1"
+			v-if="isOwner"
 		><small>Readonly</small></a>
 	</div>
 </template>
@@ -14,7 +14,7 @@
 	import Bus from '../../bus'
 
 	export default {
-		props: ['member', 'permission'],
+		props: ['member', 'permission', 'isOwner'],
 		methods: {
 			toggleReadonlyPermission (user) {
 				Bus.$emit('member.toggle-readonly', user.id);
