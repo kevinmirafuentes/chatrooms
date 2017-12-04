@@ -63777,7 +63777,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
 
 
-var currentChatroom = null;
+window.online = [];
+
+// checks for logged in users
+Echo.join('presence').here(function (users) {
+	users.forEach(function (u) {
+		window.online.push(u.id);
+	});
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user.here', users);
+}).joining(function (user) {
+	if (window.online.length < 1 || !window.online.includes(user.id)) {
+		window.online.push(user.id);
+	}
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user.joined', user);
+	console.log('joined', user);
+}).leaving(function (user) {
+	var idx = window.online.indexOf(user.id);
+	if (idx > -1) {
+		window.online.splice(idx, 1);
+	}
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user.left', user);
+	console.log('left', user);
+});
 
 if (Backend.user.id) {
 	Echo.private('App.Models.User.' + Backend.user.id).notification(function (notification) {
@@ -65256,7 +65277,7 @@ exports = module.exports = __webpack_require__(2)(undefined);
 
 
 // module
-exports.push([module.i, "\n.chatroom-member__readonly {\n  opacity: 0.5;\n}\n.chatroom-member__readonly--active {\n  background: #3097D1;\n  opacity: 1;\n}\n.chatroom-member__name {\n  width: 60%;\n  display: inline-block;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n}\n", ""]);
+exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatroom-member--online:before {\n    content: \"\";\n    display: block;\n    position: absolute;\n    width: 10px;\n    height: 10px;\n    left: -15px;\n    top: 5px;\n    background: #0fd40f;\n    border-radius: 50%;\n    overflow: hidden;\n}\n.chatroom-member__readonly {\n    opacity: 0.5;\n}\n.chatroom-member__readonly--active {\n    background: #3097D1;\n    opacity: 1;\n}\n.chatroom-member__name {\n    width: 60%;\n    display: inline-block;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n", ""]);
 
 // exports
 
@@ -65285,10 +65306,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['member', 'permission', 'isOwner'],
+	data: function data() {
+		return {
+			isOnline: false
+		};
+	},
+
 	methods: {
 		toggleReadonlyPermission: function toggleReadonlyPermission(user) {
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.toggle-readonly', user.id);
+		},
+		updateStatus: function updateStatus() {
+			if (window.online.includes(this.member.id)) {
+				this.isOnline = true;
+			} else {
+				this.isOnline = false;
+			}
 		}
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		this.updateStatus();
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('user.joined', function (user) {
+			_this.updateStatus();
+		}).$on('user.left', function (user) {
+			_this.updateStatus();
+		});
 	}
 });
 
@@ -65300,30 +65344,37 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "chatroom-member" }, [
-    _c("a", { staticClass: "chatroom-member__name", attrs: { href: "#" } }, [
-      _vm._v(_vm._s(_vm.member.name))
-    ]),
-    _vm._v(" "),
-    _vm.isOwner
-      ? _c(
-          "a",
-          {
-            staticClass: "pull-right chatroom-member__readonly badge",
-            class: {
-              "chatroom-member__readonly--active": _vm.member.permission === 1
-            },
-            attrs: { href: "#" },
-            on: {
-              click: function($event) {
-                _vm.toggleReadonlyPermission(_vm.member)
+  return _c(
+    "div",
+    {
+      staticClass: "chatroom-member",
+      class: { "chatroom-member--online": _vm.isOnline }
+    },
+    [
+      _c("a", { staticClass: "chatroom-member__name", attrs: { href: "#" } }, [
+        _vm._v(_vm._s(_vm.member.name))
+      ]),
+      _vm._v(" "),
+      _vm.isOwner
+        ? _c(
+            "a",
+            {
+              staticClass: "pull-right chatroom-member__readonly badge",
+              class: {
+                "chatroom-member__readonly--active": _vm.member.permission === 1
+              },
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  _vm.toggleReadonlyPermission(_vm.member)
+                }
               }
-            }
-          },
-          [_c("small", [_vm._v("Readonly")])]
-        )
-      : _vm._e()
-  ])
+            },
+            [_c("small", [_vm._v("Readonly")])]
+          )
+        : _vm._e()
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

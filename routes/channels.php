@@ -11,14 +11,10 @@
 |
 */
 
-Broadcast::channel('chat.{id}', function ($user, $id) {
-	if ($user->canJoinRoom($id)) {
-		return [
-			'id' => $user->id,
-			'name' => $user->name,
-		];
-	}
+Broadcast::channel('presence', function ($user) {
+	return ['id' => $user->id];
 });
- Broadcast::channel('App.Models.User.{id}', function ($user, $userId) {
+
+Broadcast::channel('App.Models.User.{id}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
