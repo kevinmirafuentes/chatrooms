@@ -2,25 +2,21 @@ import Bus from './bus'
 
 let currentChatroom = null;
 
-Bus.$on('chatroom.entered', (chatroomId) => {
-	if (currentChatroom) {
-		Echo.leave(currentChatroom)
-	}
 
-	currentChatroom = 'chat.'+chatroomId;
+if (Backend.user.id) {
+	Echo.private('App.Models.User.' + Backend.user.id)
+		.notification((notification) => {
+			var event = notification.type.replace(/\\/g, '.')
+			Bus.$emit(event, notification)
+		})
+}
 
-	Echo.join(currentChatroom)
-		.joining((user) => {
-			// console.log('user joined chatroom '+chatroomId, user)
-		})
-		.leaving((user) => {
-			// console.log('user left chatroom '+chatroomId, user)
-		})
-		.listen('Chat.MessageCreated', (e) => {
-			Bus.$emit('message.added', e.message)
-		})
-		.listen('Chat.UserPermissionChanged', (e) => {
-			Bus.$emit('user-permission.changed', e);
-		})
-})
-
+Bus.$on('App.Notifications.Chat.ChatroomCreated', (e) => {
+	Bus.$emit('chatroom.created', e.chatroom)
+});
+Bus.$on('App.Notifications.Chat.MessageCreated', (e) => {
+	Bus.$emit('message.added', e.message)
+});
+Bus.$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
+	Bus.$emit('user-permission.changed', e.data);
+});

@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Chat\Chatroom;
 use App\Models\Chat\Message;
-use App\Events\Chat\MessageCreated;
+use App\Notifications\Chat\MessageCreated;
+use Notification;
 
 class MessageController extends Controller
 {
@@ -75,7 +76,8 @@ class MessageController extends Controller
             'body' => $request->body
         ]);
 
-        broadcast(new MessageCreated($message))->toOthers();
+        $notifiables = $chatroom->users()->where('user_id', '<>', $message->user_id)->get();
+        Notification::send($notifiables, new MessageCreated($message));
 
         return response()->json($message->formatForJson(), 200);
     }

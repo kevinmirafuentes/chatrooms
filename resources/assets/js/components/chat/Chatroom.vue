@@ -151,7 +151,6 @@
 		mounted () {
 			Bus.$on('chatroom.selected', (chatroom) => {
 				this.chatroom = chatroom
-				this.permission = chatroom.pivot.permission
 				this.isOwner = chatroom.user_id == Backend.user.id
 				this.loadMessages(chatroom.id)
 				Bus.$emit('chatroom.entered', chatroom.id)
@@ -159,6 +158,7 @@
 			.$on('chatroom.messages.loaded', (data) => {
 				this.messages = data.messages
 				this.members = data.members
+				this.permission = data.permission
 				this.nextPageUrl = data.next_page_url
 				this.error = null
 				this.scrollToLatest()

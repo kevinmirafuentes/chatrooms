@@ -63779,22 +63779,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 var currentChatroom = null;
 
-__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.entered', function (chatroomId) {
-	if (currentChatroom) {
-		Echo.leave(currentChatroom);
-	}
-
-	currentChatroom = 'chat.' + chatroomId;
-
-	Echo.join(currentChatroom).joining(function (user) {
-		// console.log('user joined chatroom '+chatroomId, user)
-	}).leaving(function (user) {
-		// console.log('user left chatroom '+chatroomId, user)
-	}).listen('Chat.MessageCreated', function (e) {
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
-	}).listen('Chat.UserPermissionChanged', function (e) {
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e);
+if (Backend.user.id) {
+	Echo.private('App.Models.User.' + Backend.user.id).notification(function (notification) {
+		var event = notification.type.replace(/\\/g, '.');
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit(event, notification);
 	});
+}
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.ChatroomCreated', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.created', e.chatroom);
+});
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.MessageCreated', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
+});
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e.data);
 });
 
 /***/ }),
@@ -64544,13 +64543,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.selected', function (chatroom) {
 			_this4.chatroom = chatroom;
-			_this4.permission = chatroom.pivot.permission;
 			_this4.isOwner = chatroom.user_id == Backend.user.id;
 			_this4.loadMessages(chatroom.id);
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.entered', chatroom.id);
 		}).$on('chatroom.messages.loaded', function (data) {
 			_this4.messages = data.messages;
 			_this4.members = data.members;
+			_this4.permission = data.permission;
 			_this4.nextPageUrl = data.next_page_url;
 			_this4.error = null;
 			_this4.scrollToLatest();
