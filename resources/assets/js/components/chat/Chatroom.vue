@@ -24,11 +24,11 @@
 			</div>
 			<div class="col-md-4">
 				<h3>Members</h3>
-				<div class="pull-right">
-					<a href="#"><small>Readonly all..</small></a>
+				<div class="pull-right" v-if="permission == 1">
+					<a href="#" @click="changeUsersToReadonly"><small>Readonly all..</small></a>
 				</div>
 				<div class="clearfix"></div>
-				<chatroom-user v-for="member in members" :key="member.id" :member="member"></chatroom-user>
+				<chatroom-user v-for="member in members" :key="member.id" :permission="permission" :member="member"></chatroom-user>
 			</div>
 		</div>
 		<div v-if="!error && chatroom == null" class="chatroom__placeholder">
@@ -124,6 +124,28 @@
 						this.sendMessagePool()
 					})
 				}
+			},
+			changeUsersToReadonly (e) {
+				e.preventDefault()
+
+				let users = [];
+
+				this.members.forEach((user) => {
+					users.push(user.id)
+				})
+
+				let params = {
+					users: users,
+					chatroom: this.chatroom.id
+				};
+
+				axios.post('/chat/users/to-readonly', params)
+				.then((response) => {
+					for (var i=0; i<this.members.length; i++) {
+						this.members[i].permission = 1;
+					}
+				})
+				.catch(() => {})
 			}
 		},
 		mounted () {
@@ -131,7 +153,6 @@
 				this.chatroom = chatroom
 				this.permission = chatroom.pivot.permission
 				this.loadMessages(chatroom.id)
-				console.log('chat room selected')
 				Bus.$emit('chatroom.entered', chatroom.id)
 			})
 			.$on('chatroom.messages.loaded', (data) => {
@@ -165,13 +186,33 @@
 					}
 				}
 			})
+			.$on('member.toggle-readonly', (id) => {
+				this.members.forEach((user, key) => {
+					if (user.id === id) {
+						let permission = this.members[key].permission;
+						this.members[key].permission = permission === 1 ? 0 : 1;
+
+						let params = {
+							users: [id],
+							chatroom: this.chatroom.id
+						};
+
+						let target = permission === 1 ? '/chat/users/to-collab' : '/chat/users/to-readonly';
+						axios.post(target, params)
+							.catch(() => {
+								// rollback
+								this.members[key].permission = permission
+							})
+					}
+				})
+			})
 
 			// when message is resending, remove from list
 			// and set as the latest message
 			// message added is then triggered again to
 			// attach the message and send to server
 			Bus.$on('message.resending', (message) => {
-				console.log('message is removed', message)
+				//console.log('message is removed', message)
 			})
 		}
 	}

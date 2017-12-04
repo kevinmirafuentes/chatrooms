@@ -1,13 +1,25 @@
 <template>
 	<div class="chatroom-member">
 		<a href="#" class="chatroom-member__name">{{ member.name }}</a>
-		<a href="#" class="pull-right chatroom-member__readonly badge" :class="{ 'chatroom-member__readonly--active': member.permission === 1 }"><small>Readonly</small></a>
+		<a href="#"
+			class="pull-right chatroom-member__readonly badge"
+			:class="{ 'chatroom-member__readonly--active': member.permission === 1 }"
+			@click="toggleReadonlyPermission(member)"
+			v-if="permission == 1"
+		><small>Readonly</small></a>
 	</div>
 </template>
 
 <script>
+	import Bus from '../../bus'
+
 	export default {
-		props: ['member']
+		props: ['member', 'permission'],
+		methods: {
+			toggleReadonlyPermission (user) {
+				Bus.$emit('member.toggle-readonly', user.id);
+			}
+		}
 	}
 </script>
 

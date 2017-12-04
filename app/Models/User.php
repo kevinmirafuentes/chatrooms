@@ -55,4 +55,9 @@ class User extends Authenticatable
     {
         return $this->chatrooms()->where('chatroom_id', $id)->count() > 0;
     }
+
+    public function canChangePermission($chatroom_id)
+    {
+        return $this->owned_chatrooms()->where('id', $chatroom_id)->count() > 0;
+    }
 }

@@ -64513,44 +64513,83 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 				if (_ret === 'continue') continue;
 			}
+		},
+		changeUsersToReadonly: function changeUsersToReadonly(e) {
+			var _this3 = this;
+
+			e.preventDefault();
+
+			var users = [];
+
+			this.members.forEach(function (user) {
+				users.push(user.id);
+			});
+
+			var params = {
+				users: users,
+				chatroom: this.chatroom.id
+			};
+
+			axios.post('/chat/users/to-readonly', params).then(function (response) {
+				for (var i = 0; i < _this3.members.length; i++) {
+					_this3.members[i].permission = 1;
+				}
+			}).catch(function () {});
 		}
 	},
 	mounted: function mounted() {
-		var _this3 = this;
+		var _this4 = this;
 
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.selected', function (chatroom) {
-			_this3.chatroom = chatroom;
-			_this3.permission = chatroom.pivot.permission;
-			_this3.loadMessages(chatroom.id);
-			console.log('chat room selected');
+			_this4.chatroom = chatroom;
+			_this4.permission = chatroom.pivot.permission;
+			_this4.loadMessages(chatroom.id);
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.entered', chatroom.id);
 		}).$on('chatroom.messages.loaded', function (data) {
-			_this3.messages = data.messages;
-			_this3.members = data.members;
-			_this3.nextPageUrl = data.next_page_url;
-			_this3.error = null;
-			_this3.scrollToLatest();
+			_this4.messages = data.messages;
+			_this4.members = data.members;
+			_this4.nextPageUrl = data.next_page_url;
+			_this4.error = null;
+			_this4.scrollToLatest();
 		}).$on('message.added', function (message) {
-			_this3.messages.unshift(message);
-			_this3.body = null;
+			_this4.messages.unshift(message);
+			_this4.body = null;
 
-			_this3.scrollToLatest();
-			_this3.sendMessagePool();
+			_this4.scrollToLatest();
+			_this4.sendMessagePool();
 		}).$on('message.saved', function (message) {
-			for (var i = 0; i < _this3.messages.length; i++) {
-				if (_this3.messages[i].id === message.id) {
-					_this3.messages[i].failed = false;
-					_this3.messages[i].sending = false;
+			for (var i = 0; i < _this4.messages.length; i++) {
+				if (_this4.messages[i].id === message.id) {
+					_this4.messages[i].failed = false;
+					_this4.messages[i].sending = false;
 				}
 			}
 		}).$on('message.failed', function (message) {
-			for (var i = 0; i < _this3.messages.length; i++) {
-				if (_this3.messages[i].id === message.id) {
-					_this3.messages[i].failed = true;
-					_this3.messages[i].sending = false;
-					_this3.scrollToLatest();
+			for (var i = 0; i < _this4.messages.length; i++) {
+				if (_this4.messages[i].id === message.id) {
+					_this4.messages[i].failed = true;
+					_this4.messages[i].sending = false;
+					_this4.scrollToLatest();
 				}
 			}
+		}).$on('member.toggle-readonly', function (id) {
+			_this4.members.forEach(function (user, key) {
+				if (user.id === id) {
+					var permission = _this4.members[key].permission;
+					_this4.members[key].permission = permission === 1 ? 0 : 1;
+
+					var params = {
+						users: [id],
+						chatroom: _this4.chatroom.id
+					};
+
+					var target = permission === 1 ? '/chat/users/to-collab' : '/chat/users/to-readonly';
+					axios.post(target, params).catch(function () {
+						// rollback
+						_this4.members[key].permission = permission;
+					});
+				}
+			});
 		});
 
 		// when message is resending, remove from list
@@ -64558,7 +64597,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		// message added is then triggered again to
 		// attach the message and send to server
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('message.resending', function (message) {
-			console.log('message is removed', message);
+			//console.log('message is removed', message)
 		});
 	}
 });
@@ -64892,14 +64931,25 @@ var render = function() {
             [
               _c("h3", [_vm._v("Members")]),
               _vm._v(" "),
-              _vm._m(0, false, false),
+              _vm.permission == 1
+                ? _c("div", { staticClass: "pull-right" }, [
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: { click: _vm.changeUsersToReadonly }
+                      },
+                      [_c("small", [_vm._v("Readonly all..")])]
+                    )
+                  ])
+                : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "clearfix" }),
               _vm._v(" "),
               _vm._l(_vm.members, function(member) {
                 return _c("chatroom-user", {
                   key: member.id,
-                  attrs: { member: member }
+                  attrs: { permission: _vm.permission, member: member }
                 })
               })
             ],
@@ -64932,18 +64982,7 @@ var render = function() {
       : _vm._e()
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "pull-right" }, [
-      _c("a", { attrs: { href: "#" } }, [
-        _c("small", [_vm._v("Readonly all..")])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -65218,6 +65257,12 @@ exports.push([module.i, "\n.chatroom-member__readonly {\n  opacity: 0.5;\n}\n.ch
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -65226,8 +65271,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['member']
+	props: ['member', 'permission'],
+	methods: {
+		toggleReadonlyPermission: function toggleReadonlyPermission(user) {
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.toggle-readonly', user.id);
+		}
+	}
 });
 
 /***/ }),
@@ -65243,17 +65295,24 @@ var render = function() {
       _vm._v(_vm._s(_vm.member.name))
     ]),
     _vm._v(" "),
-    _c(
-      "a",
-      {
-        staticClass: "pull-right chatroom-member__readonly badge",
-        class: {
-          "chatroom-member__readonly--active": _vm.member.permission === 1
-        },
-        attrs: { href: "#" }
-      },
-      [_c("small", [_vm._v("Readonly")])]
-    )
+    _vm.permission == 1
+      ? _c(
+          "a",
+          {
+            staticClass: "pull-right chatroom-member__readonly badge",
+            class: {
+              "chatroom-member__readonly--active": _vm.member.permission === 1
+            },
+            attrs: { href: "#" },
+            on: {
+              click: function($event) {
+                _vm.toggleReadonlyPermission(_vm.member)
+              }
+            }
+          },
+          [_c("small", [_vm._v("Readonly")])]
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
