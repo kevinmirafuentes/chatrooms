@@ -12,7 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+	return redirect('chat');
+    // return view('welcome');
 });
 
 Auth::routes();
