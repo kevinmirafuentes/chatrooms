@@ -54,6 +54,8 @@
 		background-color: #fff;
 		padding: 10px;
 		margin: 0;
+		max-height: 415px;
+		overflow-y: auto;
 
 		&__link {
 			display: block;

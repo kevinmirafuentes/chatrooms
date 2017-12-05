@@ -64160,7 +64160,7 @@ exports = module.exports = __webpack_require__(3)(undefined);
 
 
 // module
-exports.push([module.i, "\n.chatrooms {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px;\n  margin: 0;\n}\n.chatrooms__link {\n    display: block;\n    padding: 5px 10px;\n    width: 100%;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n.chatrooms__link--selected {\n    background: #eee;\n    font-weight: bold;\n    color: #3097D1;\n    text-decoration: none;\n}\n", ""]);
+exports.push([module.i, "\n.chatrooms {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px;\n  margin: 0;\n  max-height: 415px;\n  overflow-y: auto;\n}\n.chatrooms__link {\n    display: block;\n    padding: 5px 10px;\n    width: 100%;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n.chatrooms__link--selected {\n    background: #eee;\n    font-weight: bold;\n    color: #3097D1;\n    text-decoration: none;\n}\n", ""]);
 
 // exports
 
