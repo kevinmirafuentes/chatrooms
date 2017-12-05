@@ -9,7 +9,10 @@
 				@click="selectChatroom(chatroom, $event)"
 				class="chatrooms__link"
 				:class="{ 'chatrooms__link--selected': selectedChatroom == chatroom.id }"
-			>{{ chatroom.name }}</a>
+			>
+				{{ chatroom.name }}
+				<i class="badge pull-right unread-messages-counter" v-if="chatroom.unread_messages">{{ chatroom.unread_messages }}</i>
+			</a>
 		</div>
 	</div>
 </template>
@@ -36,6 +39,13 @@
 			})
 			.$on('chatroom.created', (chatroom) => {
 				this.chatrooms.unshift(chatroom)
+			})
+			.$on('chatroom.unread.changed', (data) => {
+				this.chatrooms.forEach((chatroom, key) => {
+					if (chatroom.id === data.chatroom) {
+						this.chatrooms[key].unread_messages = data.unread_messages
+					}
+				})
 			})
 		},
 		methods: {
@@ -64,6 +74,14 @@
 			overflow: hidden;
 			white-space: nowrap;
 			text-overflow: ellipsis;
+			padding-right: 30px;
+			position: relative;
+
+			.unread-messages-counter {
+				position: absolute;
+				top: 5px;
+				right: 0;
+			}
 		}
 
 		&__link--selected {

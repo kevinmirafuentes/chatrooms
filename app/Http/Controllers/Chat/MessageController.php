@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Chat\Chatroom;
 use App\Models\Chat\Message;
 use App\Notifications\Chat\MessageCreated;
+use App\Notifications\Chat\UnreadMessagesCount;
 use Notification;
 
 class MessageController extends Controller
@@ -56,6 +57,13 @@ class MessageController extends Controller
 
         $permission = $current_user->pivot->permission;
 
+
+        // mark as read / remove notifications
+        $request->user()->unreadNotifications()
+                ->where('type', 'App\Notifications\Chat\MessageCreated')
+                ->where('data', 'like', '%"chatroom_id":"'.$chatroom->id.'"%')
+                ->delete();
+
         return response()->json([
             'messages' => $results,
             'next_page_url' => $messages->nextPageUrl(),
@@ -78,6 +86,7 @@ class MessageController extends Controller
 
         $notifiables = $chatroom->users()->where('user_id', '<>', $message->user_id)->get();
         Notification::send($notifiables, new MessageCreated($message));
+        Notification::send($notifiables, new UnreadMessagesCount($chatroom->id));
 
         return response()->json($message->formatForJson(), 200);
     }

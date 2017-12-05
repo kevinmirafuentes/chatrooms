@@ -70,4 +70,12 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function countUnreadMessages($chatroom_id)
+    {
+        return $this->unreadNotifications()
+                    ->where('type', 'App\Notifications\Chat\MessageCreated')
+                    ->where('data', 'like', '%"chatroom_id":"'.$chatroom_id.'"%')
+                    ->count();
+    }
 }

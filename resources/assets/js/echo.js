@@ -36,7 +36,14 @@ Bus.$on('App.Notifications.Chat.ChatroomCreated', (e) => {
 	Bus.$emit('chatroom.created', e.chatroom)
 })
 .$on('App.Notifications.Chat.MessageCreated', (e) => {
+	e.message.read = false
 	Bus.$emit('message.added', e.message)
+})
+.$on('App.Notifications.Chat.UnreadMessagesCount', (e) => {
+	Bus.$emit('chatroom.unread.changed', {
+		chatroom: e.chatroom,
+		unread_messages: e.unread
+	})
 })
 .$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
 	Bus.$emit('user-permission.changed', e.data)

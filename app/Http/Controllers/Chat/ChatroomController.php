@@ -18,7 +18,16 @@ class ChatroomController extends Controller
     public function index(Request $request)
     {
     	$chatrooms = $request->user()->chatrooms()->latest()->get();
-    	return response()->json($chatrooms, 200);
+        $output = [];
+
+        foreach ($chatrooms as $chatroom) {
+            $output[] = array_merge(
+                $chatroom->toArray(),
+                ['unread_messages' => $request->user()->countUnreadMessages($chatroom->id)]
+            );
+        }
+
+    	return response()->json($output, 200);
     }
 
     public function store(CreateChatroomRequest $request)
@@ -89,6 +98,16 @@ class ChatroomController extends Controller
             $chatroom->users()->detach($request->user_id);
             Notification::send($current_members, new MemberRemoved($request->user_id));
         }
+        return response()->json('', 200);
+    }
+
+    public function ping(Chatroom $chatroom, Request $request)
+    {
+        $request->user()->unreadNotifications()
+                    ->where('type', 'App\Notifications\Chat\MessageCreated')
+                    ->where('data', 'like', '%"chatroom_id":"'.$chatroom->id.'"%')
+                    ->delete();
+
         return response()->json('', 200);
     }
 }

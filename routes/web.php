@@ -34,4 +34,5 @@ Route::group(['prefix' => 'chat'], function() {
 	Route::get('/chatrooms/{chatroom}/available-users', 'Chat\ChatroomController@availableUsers');
 	Route::post('/chatrooms/{chatroom}/members', 'Chat\ChatroomController@addMembers');
 	Route::post('/chatrooms/{chatroom}/remove-member', 'Chat\ChatroomController@removeMember');
+	Route::get('/chatrooms/{chatroom}/ping', 'Chat\ChatroomController@ping');
 });

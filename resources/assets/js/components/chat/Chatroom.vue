@@ -82,10 +82,12 @@
 
 				return {
 					id: tempId,
+					chatroom_id: this.chatroom.id,
 					body: this.body,
 					self_owned: true,
 					sending: true,
 					failed: false,
+					read: true,
 					created_at: moment().utc(0).format('YYYY-MM-DD HH:mm:ss'),
 					user: {
 						name: Backend.user.name
@@ -102,7 +104,9 @@
 			},
 			scrollToLatest () {
 				this.$nextTick(function () {
-					this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+					if (this.chatroom) {
+						this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+					}
 				})
 			},
 			sendMessagePool () {
@@ -147,6 +151,9 @@
 					}
 				})
 				.catch(() => {})
+			},
+			ping () {
+				axios.get('/chat/chatrooms/'+this.chatroom.id+'/ping')
 			}
 		},
 		mounted () {
@@ -155,6 +162,11 @@
 				this.isOwner = chatroom.user_id == Backend.user.id
 				this.loadMessages(chatroom.id)
 				Bus.$emit('chatroom.entered', chatroom.id)
+
+				Bus.$emit('chatroom.unread.changed', {
+					chatroom: chatroom.id,
+					unread_messages: 0
+				})
 			})
 			.$on('chatroom.messages.loaded', (data) => {
 				this.messages = data.messages
@@ -163,8 +175,25 @@
 				this.nextPageUrl = data.next_page_url
 				this.error = null
 				this.scrollToLatest()
+
+				this.messages.forEach((message, key) => {
+					this.messages[key].read = true
+				})
 			})
 			.$on('message.added', (message) => {
+				if (!this.chatroom || message.chatroom_id !== this.chatroom.id) {
+					return
+				}
+
+				if (!message.read) {
+					this.ping()
+					Bus.$emit('chatroom.unread.changed', {
+						chatroom: this.chatroom.id,
+						unread_messages: 0
+					})
+				}
+
+				message.read = true
 				this.messages.unshift(message)
 				this.body = null
 

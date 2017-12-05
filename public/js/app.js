@@ -63809,7 +63809,13 @@ if (Backend.user.id) {
 __WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.ChatroomCreated', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.created', e.chatroom);
 }).$on('App.Notifications.Chat.MessageCreated', function (e) {
+	e.message.read = false;
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
+}).$on('App.Notifications.Chat.UnreadMessagesCount', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.unread.changed', {
+		chatroom: e.chatroom,
+		unread_messages: e.unread
+	});
 }).$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e.data);
 }).$on('App.Notifications.Chat.MemberAdded', function (e) {
@@ -64160,7 +64166,7 @@ exports = module.exports = __webpack_require__(3)(undefined);
 
 
 // module
-exports.push([module.i, "\n.chatrooms {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px;\n  margin: 0;\n  max-height: 415px;\n  overflow-y: auto;\n}\n.chatrooms__link {\n    display: block;\n    padding: 5px 10px;\n    width: 100%;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n.chatrooms__link--selected {\n    background: #eee;\n    font-weight: bold;\n    color: #3097D1;\n    text-decoration: none;\n}\n", ""]);
+exports.push([module.i, "\n.chatrooms {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px;\n  margin: 0;\n  max-height: 415px;\n  overflow-y: auto;\n}\n.chatrooms__link {\n    display: block;\n    padding: 5px 10px;\n    width: 100%;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n    padding-right: 30px;\n    position: relative;\n}\n.chatrooms__link .unread-messages-counter {\n      position: absolute;\n      top: 5px;\n      right: 0;\n}\n.chatrooms__link--selected {\n    background: #eee;\n    font-weight: bold;\n    color: #3097D1;\n    text-decoration: none;\n}\n", ""]);
 
 // exports
 
@@ -64221,6 +64227,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -64244,6 +64253,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			_this.selectedChatroom = chatroom.id;
 		}).$on('chatroom.created', function (chatroom) {
 			_this.chatrooms.unshift(chatroom);
+		}).$on('chatroom.unread.changed', function (data) {
+			_this.chatrooms.forEach(function (chatroom, key) {
+				if (chatroom.id === data.chatroom) {
+					_this.chatrooms[key].unread_messages = data.unread_messages;
+				}
+			});
 		});
 	},
 
@@ -64287,7 +64302,16 @@ var render = function() {
                 }
               }
             },
-            [_vm._v(_vm._s(chatroom.name))]
+            [
+              _vm._v("\n\t\t\t" + _vm._s(chatroom.name) + "\n\t\t\t"),
+              chatroom.unread_messages
+                ? _c(
+                    "i",
+                    { staticClass: "badge pull-right unread-messages-counter" },
+                    [_vm._v(_vm._s(chatroom.unread_messages))]
+                  )
+                : _vm._e()
+            ]
           )
         ])
       })
@@ -64491,10 +64515,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			return {
 				id: tempId,
+				chatroom_id: this.chatroom.id,
 				body: this.body,
 				self_owned: true,
 				sending: true,
 				failed: false,
+				read: true,
 				created_at: __WEBPACK_IMPORTED_MODULE_1_moment___default()().utc(0).format('YYYY-MM-DD HH:mm:ss'),
 				user: {
 					name: Backend.user.name
@@ -64511,7 +64537,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		scrollToLatest: function scrollToLatest() {
 			this.$nextTick(function () {
-				this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
+				if (this.chatroom) {
+					this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
+				}
 			});
 		},
 		sendMessagePool: function sendMessagePool() {
@@ -64562,6 +64590,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					_this3.members[i].permission = 1;
 				}
 			}).catch(function () {});
+		},
+		ping: function ping() {
+			axios.get('/chat/chatrooms/' + this.chatroom.id + '/ping');
 		}
 	},
 	mounted: function mounted() {
@@ -64572,6 +64603,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			_this4.isOwner = chatroom.user_id == Backend.user.id;
 			_this4.loadMessages(chatroom.id);
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.entered', chatroom.id);
+
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.unread.changed', {
+				chatroom: chatroom.id,
+				unread_messages: 0
+			});
 		}).$on('chatroom.messages.loaded', function (data) {
 			_this4.messages = data.messages;
 			_this4.members = data.members;
@@ -64579,7 +64615,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			_this4.nextPageUrl = data.next_page_url;
 			_this4.error = null;
 			_this4.scrollToLatest();
+
+			_this4.messages.forEach(function (message, key) {
+				_this4.messages[key].read = true;
+			});
 		}).$on('message.added', function (message) {
+			if (!_this4.chatroom || message.chatroom_id !== _this4.chatroom.id) {
+				return;
+			}
+
+			if (!message.read) {
+				_this4.ping();
+				__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.unread.changed', {
+					chatroom: _this4.chatroom.id,
+					unread_messages: 0
+				});
+			}
+
+			message.read = true;
 			_this4.messages.unshift(message);
 			_this4.body = null;
 

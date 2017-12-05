@@ -37,6 +37,7 @@ class Message extends Model
 
         return [
             'id' => $this->id,
+            'chatroom_id' => $this->chatroom_id,
             'body' => $this->body,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'self_owned' => $for_other_users ? false : $this->selfOwned,

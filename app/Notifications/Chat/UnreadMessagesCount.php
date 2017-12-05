@@ -7,22 +7,21 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use App\Models\Chat\Message;
 
-class MessageCreated extends Notification
+class UnreadMessagesCount extends Notification
 {
     use Queueable;
 
-    public $message;
+    public $chatroom;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Message $message)
+    public function __construct($chatroom)
     {
-        $this->message = $message;
+        $this->chatroom = $chatroom;
     }
 
     /**
@@ -33,7 +32,7 @@ class MessageCreated extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast', 'database'];
+        return ['broadcast'];
     }
 
     /**
@@ -59,14 +58,16 @@ class MessageCreated extends Notification
     public function toArray($notifiable)
     {
         return [
-            'message' => $this->message->formatForJson(true),
+            'chatroom' => $this->chatroom,
+            'unread' => $notifiable->countUnreadMessages($this->chatroom),
         ];
     }
 
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'message' => $this->message->formatForJson(true),
+            'chatroom' => $this->chatroom,
+            'unread' => $notifiable->countUnreadMessages($this->chatroom),
         ]);
     }
 }
