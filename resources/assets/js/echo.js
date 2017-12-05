@@ -15,7 +15,6 @@ Echo.join('presence')
 			window.online.push(user.id)
 		}
 		Bus.$emit('user.joined', user)
-		console.log('joined', user)
 	})
 	.leaving((user) => {
 		let idx = window.online.indexOf(user.id)
@@ -23,7 +22,6 @@ Echo.join('presence')
 			window.online.splice(idx, 1)
 		}
 		Bus.$emit('user.left', user)
-		console.log('left', user)
 	})
 
 if (Backend.user.id) {
@@ -36,10 +34,19 @@ if (Backend.user.id) {
 
 Bus.$on('App.Notifications.Chat.ChatroomCreated', (e) => {
 	Bus.$emit('chatroom.created', e.chatroom)
-});
-Bus.$on('App.Notifications.Chat.MessageCreated', (e) => {
+})
+.$on('App.Notifications.Chat.MessageCreated', (e) => {
 	Bus.$emit('message.added', e.message)
-});
-Bus.$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
-	Bus.$emit('user-permission.changed', e.data);
-});
+})
+.$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
+	Bus.$emit('user-permission.changed', e.data)
+})
+.$on('App.Notifications.Chat.MemberAdded', (e) => {
+	Bus.$emit('chatroom.members.added.notification', {
+		members: e.members,
+		chatroom: e.chatroom
+	});
+})
+.$on('App.Notifications.Chat.MemberRemoved', (e) => {
+	Bus.$emit('member.removed', e.user_id)
+})

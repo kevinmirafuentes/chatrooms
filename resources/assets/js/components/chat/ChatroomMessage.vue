@@ -5,7 +5,7 @@
 	}">
 		<div class="chatroom-message__head">
 			<div>{{ message.user.name }}</div>
-			<div class="chatroom-message__date">{{ message.created_at }}</div>
+			<div class="chatroom-message__date">{{ formatedDate }}</div>
 		</div>
 		<div class="chatroom-message__body">{{ message.body }}</div>
 		<div class="chatroom-message__error text-right" v-if="typeof message.failed != 'undefined' && message.failed">
@@ -15,8 +15,29 @@
 </template>
 
 <script>
+	import moment from 'moment'
+
 	export default {
-		props: ['message']
+		props: ['message'],
+		data () {
+			return {
+				formatedDate: null
+			}
+		},
+		methods: {
+			setAutoupdateDate () {
+				let date = this.message.created_at
+				let testDate = moment.utc(date, 'YYYY-MM-DD HH:mm:ss')
+				this.formatedDate = testDate.local().fromNow()
+
+				setTimeout(() => {
+					this.setAutoupdateDate()
+				}, 60000)
+			}
+		},
+		mounted () {
+			this.setAutoupdateDate()
+		}
 	}
 </script>
 

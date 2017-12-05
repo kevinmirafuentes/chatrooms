@@ -4897,6 +4897,17 @@ module.exports = {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+
+
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_0_vue___default.a());
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 /*
@@ -4978,7 +4989,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -5199,7 +5210,7 @@ function applyToTag (styleElement, obj) {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -5306,17 +5317,6 @@ module.exports = function normalizeComponent (
   }
 }
 
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-
-
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_0_vue___default.a());
 
 /***/ }),
 /* 6 */
@@ -28102,6 +28102,7 @@ Vue.component('chatroom', __webpack_require__(170));
 Vue.component('chatroom-message', __webpack_require__(176));
 Vue.component('chatroom-user', __webpack_require__(181));
 Vue.component('create-chatroom-modal', __webpack_require__(186));
+Vue.component('chatroom-member-controls', __webpack_require__(200));
 
 var app = new Vue({
   el: '#app'
@@ -63774,7 +63775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
 
 
 window.online = [];
@@ -63790,14 +63791,12 @@ Echo.join('presence').here(function (users) {
 		window.online.push(user.id);
 	}
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user.joined', user);
-	console.log('joined', user);
 }).leaving(function (user) {
 	var idx = window.online.indexOf(user.id);
 	if (idx > -1) {
 		window.online.splice(idx, 1);
 	}
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user.left', user);
-	console.log('left', user);
 });
 
 if (Backend.user.id) {
@@ -63809,12 +63808,17 @@ if (Backend.user.id) {
 
 __WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.ChatroomCreated', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.created', e.chatroom);
-});
-__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.MessageCreated', function (e) {
+}).$on('App.Notifications.Chat.MessageCreated', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
-});
-__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
+}).$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e.data);
+}).$on('App.Notifications.Chat.MemberAdded', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.members.added.notification', {
+		members: e.members,
+		chatroom: e.chatroom
+	});
+}).$on('App.Notifications.Chat.MemberRemoved', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.removed', e.user_id);
 });
 
 /***/ }),
@@ -64078,7 +64082,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(165)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(5)
 /* script */
 var __vue_script__ = __webpack_require__(168)
 /* template */
@@ -64132,7 +64136,7 @@ var content = __webpack_require__(166);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("082c858a", content, false);
+var update = __webpack_require__(4)("082c858a", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -64151,7 +64155,7 @@ if(false) {
 /* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(undefined);
+exports = module.exports = __webpack_require__(3)(undefined);
 // imports
 
 
@@ -64200,7 +64204,7 @@ module.exports = function listToStyles (parentId, list) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
 //
 //
 //
@@ -64310,7 +64314,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(171)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(5)
 /* script */
 var __vue_script__ = __webpack_require__(173)
 /* template */
@@ -64364,7 +64368,7 @@ var content = __webpack_require__(172);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("606d34d5", content, false);
+var update = __webpack_require__(4)("606d34d5", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -64383,12 +64387,12 @@ if(false) {
 /* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(undefined);
+exports = module.exports = __webpack_require__(3)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "\n.chatroom {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px 0;\n}\n.chatroom__messages {\n    height: 400px;\n    max-height: 400px;\n    overflow-y: auto;\n    border: 1px solid #d3e0e9;\n    margin-bottom: 20px;\n}\n.chatroom__form-input {\n    border: 1px solid #d3e0e9;\n    width: 100%;\n}\n.chatroom__placeholder {\n    padding: 20px;\n    height: 400px;\n    min-height: 400px;\n    text-align: center;\n}\n", ""]);
+exports.push([module.i, "\n.chatroom {\n  border-radius: 3px;\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  padding: 10px 0;\n}\n.chatroom__messages {\n    height: 400px;\n    max-height: 400px;\n    overflow-y: auto;\n    border: 1px solid #d3e0e9;\n    margin-bottom: 20px;\n}\n.chatroom__form-input {\n    border: 1px solid #d3e0e9;\n    width: 100%;\n}\n.chatroom__placeholder {\n    padding: 20px;\n    height: 400px;\n    min-height: 400px;\n    text-align: center;\n}\n.chatroom .members-controls {\n    margin-bottom: 20px;\n}\n", ""]);
 
 // exports
 
@@ -64399,9 +64403,10 @@ exports.push([module.i, "\n.chatroom {\n  border-radius: 3px;\n  border: 1px sol
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
 //
 //
 //
@@ -64617,6 +64622,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (e.chatroom == _this4.chatroom.id) {
 				_this4.permission = e.permission;
 			}
+		}).$on('users.to.readonly', function (e) {
+			_this4.changeUsersToReadonly(e);
+		}).$on('chatroom.members.added', function (members) {
+			_this4.members = _this4.members.concat(members);
+		}).$on('chatroom.members.added.notification', function (data) {
+			if (data.chatroom.id) {
+				_this4.members = _this4.members.concat(data.members);
+			}
+		}).$on('member.removed', function (id) {
+			_this4.members = _this4.members.filter(function (member) {
+				return member.id != id;
+			});
 		});
 
 		// when message is resending, remove from list
@@ -64959,16 +64976,18 @@ var render = function() {
               _c("h3", [_vm._v("Members")]),
               _vm._v(" "),
               this.isOwner
-                ? _c("div", { staticClass: "pull-right" }, [
-                    _c(
-                      "a",
-                      {
-                        attrs: { href: "#" },
-                        on: { click: _vm.changeUsersToReadonly }
-                      },
-                      [_c("small", [_vm._v("Readonly all..")])]
-                    )
-                  ])
+                ? _c(
+                    "div",
+                    { staticClass: "members-controls" },
+                    [
+                      _c("chatroom-member-controls", {
+                        attrs: { chatroom: _vm.chatroom }
+                      }),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "clearfix" })
+                    ],
+                    1
+                  )
                 : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "clearfix" }),
@@ -64979,7 +64998,8 @@ var render = function() {
                   attrs: {
                     permission: _vm.permission,
                     member: member,
-                    isOwner: _vm.isOwner
+                    isOwner: _vm.isOwner,
+                    chatroom: _vm.chatroom
                   }
                 })
               })
@@ -65032,7 +65052,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(177)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(5)
 /* script */
 var __vue_script__ = __webpack_require__(179)
 /* template */
@@ -65086,7 +65106,7 @@ var content = __webpack_require__(178);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("6261768d", content, false);
+var update = __webpack_require__(4)("6261768d", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -65105,7 +65125,7 @@ if(false) {
 /* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(undefined);
+exports = module.exports = __webpack_require__(3)(undefined);
 // imports
 
 
@@ -65121,6 +65141,8 @@ exports.push([module.i, "\n.chatroom-message {\n  border-bottom: 1px solid #d3e0
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 //
 //
 //
@@ -65138,8 +65160,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['message']
+	props: ['message'],
+	data: function data() {
+		return {
+			formatedDate: null
+		};
+	},
+
+	methods: {
+		setAutoupdateDate: function setAutoupdateDate() {
+			var _this = this;
+
+			var date = this.message.created_at;
+			var testDate = __WEBPACK_IMPORTED_MODULE_0_moment___default.a.utc(date, 'YYYY-MM-DD HH:mm:ss');
+			this.formatedDate = testDate.local().fromNow();
+
+			setTimeout(function () {
+				_this.setAutoupdateDate();
+			}, 60000);
+		}
+	},
+	mounted: function mounted() {
+		this.setAutoupdateDate();
+	}
 });
 
 /***/ }),
@@ -65164,7 +65210,7 @@ var render = function() {
         _c("div", [_vm._v(_vm._s(_vm.message.user.name))]),
         _vm._v(" "),
         _c("div", { staticClass: "chatroom-message__date" }, [
-          _vm._v(_vm._s(_vm.message.created_at))
+          _vm._v(_vm._s(_vm.formatedDate))
         ])
       ]),
       _vm._v(" "),
@@ -65199,7 +65245,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(182)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(5)
 /* script */
 var __vue_script__ = __webpack_require__(184)
 /* template */
@@ -65253,7 +65299,7 @@ var content = __webpack_require__(183);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("458eb50c", content, false);
+var update = __webpack_require__(4)("458eb50c", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -65272,12 +65318,12 @@ if(false) {
 /* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(undefined);
+exports = module.exports = __webpack_require__(3)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatroom-member--online:before {\n    content: \"\";\n    display: block;\n    position: absolute;\n    width: 10px;\n    height: 10px;\n    left: -15px;\n    top: 5px;\n    background: #0fd40f;\n    border-radius: 50%;\n    overflow: hidden;\n}\n.chatroom-member__readonly {\n    opacity: 0.5;\n}\n.chatroom-member__readonly--active {\n    background: #3097D1;\n    opacity: 1;\n}\n.chatroom-member__name {\n    width: 60%;\n    display: inline-block;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n", ""]);
+exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatroom-member--online:before {\n    content: \"\";\n    display: block;\n    position: absolute;\n    width: 10px;\n    height: 10px;\n    left: -15px;\n    top: 5px;\n    background: #0fd40f;\n    border-radius: 50%;\n    overflow: hidden;\n}\n.chatroom-member__readonly {\n    opacity: 0.5;\n}\n.chatroom-member__readonly--active {\n    background: #3097D1;\n    opacity: 1;\n}\n.chatroom-member__name {\n    width: 60%;\n    display: inline-block;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n.chatroom-member__remove {\n    display: none;\n}\n.chatroom-member:hover .chatroom-member__remove {\n    display: inline;\n}\n", ""]);
 
 // exports
 
@@ -65288,7 +65334,12 @@ exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatro
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -65305,7 +65356,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['member', 'permission', 'isOwner'],
+	props: ['member', 'permission', 'isOwner', 'chatroom'],
 	data: function data() {
 		return {
 			isOnline: false
@@ -65313,7 +65364,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	},
 
 	methods: {
-		toggleReadonlyPermission: function toggleReadonlyPermission(user) {
+		toggleReadonlyPermission: function toggleReadonlyPermission(user, e) {
+			e.preventDefault();
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.toggle-readonly', user.id);
 		},
 		updateStatus: function updateStatus() {
@@ -65322,6 +65374,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			} else {
 				this.isOnline = false;
 			}
+		},
+		removeUser: function removeUser(id, e) {
+			e.preventDefault();
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.removed', id);
+
+			axios.post('/chat/chatrooms/' + this.chatroom.id + '/remove-member', {
+				user_id: id
+			});
 		}
 	},
 	mounted: function mounted() {
@@ -65356,22 +65416,43 @@ var render = function() {
       ]),
       _vm._v(" "),
       _vm.isOwner
-        ? _c(
-            "a",
-            {
-              staticClass: "pull-right chatroom-member__readonly badge",
-              class: {
-                "chatroom-member__readonly--active": _vm.member.permission === 1
-              },
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  _vm.toggleReadonlyPermission(_vm.member)
+        ? _c("div", { staticClass: "pull-right" }, [
+            _c(
+              "a",
+              {
+                staticClass: "chatroom-member__remove",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    _vm.removeUser(_vm.member.id, $event)
+                  }
                 }
-              }
-            },
-            [_c("small", [_vm._v("Readonly")])]
-          )
+              },
+              [
+                _c("i", {
+                  staticClass: "glyphicon glyphicon-remove text-danger"
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "chatroom-member__readonly badge",
+                class: {
+                  "chatroom-member__readonly--active":
+                    _vm.member.permission === 1
+                },
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    _vm.toggleReadonlyPermission(_vm.member, $event)
+                  }
+                }
+              },
+              [_c("small", [_vm._v("Readonly")])]
+            )
+          ])
         : _vm._e()
     ]
   )
@@ -65395,7 +65476,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(187)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(5)
 /* script */
 var __vue_script__ = __webpack_require__(189)
 /* template */
@@ -65449,7 +65530,7 @@ var content = __webpack_require__(188);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("a2c27486", content, false);
+var update = __webpack_require__(4)("a2c27486", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -65468,7 +65549,7 @@ if(false) {
 /* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(undefined);
+exports = module.exports = __webpack_require__(3)(undefined);
 // imports
 
 
@@ -65484,7 +65565,7 @@ exports.push([module.i, "\n.new-chatroom-modal-button {\n  margin: 10px 0;\n}\n.
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
 //
 //
 //
@@ -65563,24 +65644,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		unselectUser: function unselectUser(id) {
+			var _this = this;
+
 			this.selectedUsers = this.selectedUsers.filter(function (user) {
-				return user.id !== id;
+				var check = user.id !== id;
+
+				_this.availableUsers.forEach(function (u, k) {
+					if (u.id === user.id) {
+						_this.availableUsers[k].sel = false;
+					}
+				});
+
+				return check;
 			});
 		},
 		selectUser: function selectUser(id) {
-			for (var i = 0; i <= this.availableUsers.length; i++) {
-				var selectedUser = this.availableUsers[i];
-				if (id === selectedUser.id) {
-					this.selectedUsers.push(selectedUser);
-					this.availableUsers = this.availableUsers.filter(function (user) {
-						return user.id !== id;
-					});
-					break;
+			var _this2 = this;
+
+			this.availableUsers.forEach(function (user, key) {
+				if (id === user.id) {
+					_this2.selectedUsers.push(user);
+					_this2.availableUsers[key].sel = true;
 				}
-			}
+			});
 		},
 		send: function send(e) {
-			var _this = this;
+			var _this3 = this;
 
 			e.preventDefault();
 
@@ -65609,7 +65698,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.created', response.data);
 				$('#create-chatroom-modal').modal('hide');
 				btn.button('reset');
-				_this.name = null;
+				_this3.name = null;
 			}).catch(function () {
 				btn.button('reset');
 				alert('Faled to create chatroom. Please try again later.');
@@ -65617,7 +65706,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}
 	},
 	mounted: function mounted() {
-		var _this2 = this;
+		var _this4 = this;
 
 		$('#create-chatroom-modal').on('shown.bs.modal', function () {
 			axios.get('/chat/users').then(function (response) {
@@ -65626,8 +65715,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		});
 
 		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('create-chatroom.users-loaded', function (users) {
-			_this2.availableUsers = users;
-			_this2.selectedUsers = [];
+			users.forEach(function (user, key) {
+				users[key].sel = false;
+			});
+			_this4.availableUsers = users;
+			_this4.selectedUsers = [];
 		});
 	}
 });
@@ -65742,24 +65834,26 @@ var render = function() {
                             "new-chatroom-modal__users new-chatroom-modal__users-list"
                         },
                         _vm._l(_vm.availableUsers, function(user) {
-                          return _c(
-                            "li",
-                            {
-                              staticClass: "new-chatroom-modal__user",
-                              on: {
-                                click: function($event) {
-                                  _vm.selectUser(user.id)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n\t\t\t\t\t\t\t\t\t\t" +
-                                  _vm._s(user.name) +
-                                  "\n\t\t\t\t\t\t\t\t\t"
+                          return !user.sel
+                            ? _c(
+                                "li",
+                                {
+                                  staticClass: "new-chatroom-modal__user",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.selectUser(user.id)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n\t\t\t\t\t\t\t\t\t\t" +
+                                      _vm._s(user.name) +
+                                      "\n\t\t\t\t\t\t\t\t\t"
+                                  )
+                                ]
                               )
-                            ]
-                          )
+                            : _vm._e()
                         })
                       )
                     ])
@@ -65836,6 +65930,387 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 192 */,
+/* 193 */,
+/* 194 */,
+/* 195 */,
+/* 196 */,
+/* 197 */,
+/* 198 */,
+/* 199 */,
+/* 200 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(5)
+/* script */
+var __vue_script__ = __webpack_require__(201)
+/* template */
+var __vue_template__ = __webpack_require__(202)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/chat/ChatroomMemberControls.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d66c801a", Component.options)
+  } else {
+    hotAPI.reload("data-v-d66c801a", Component.options)
+' + '  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 201 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['chatroom'],
+	data: function data() {
+		return {
+			selectedUsers: [],
+			availableUsers: [],
+			modal: null
+		};
+	},
+
+	methods: {
+		unselectUser: function unselectUser(id) {
+			var _this = this;
+
+			this.selectedUsers = this.selectedUsers.filter(function (user) {
+				var check = user.id !== id;
+
+				_this.availableUsers.forEach(function (u, k) {
+					if (u.id === user.id) {
+						_this.availableUsers[k].sel = false;
+					}
+				});
+
+				return check;
+			});
+		},
+		selectUser: function selectUser(id) {
+			var _this2 = this;
+
+			this.availableUsers.forEach(function (user, key) {
+				if (id === user.id) {
+					_this2.selectedUsers.push(user);
+					_this2.availableUsers[key].sel = true;
+				}
+			});
+		},
+		addMembers: function addMembers() {
+			var _this3 = this;
+
+			var memberIds = [];
+
+			this.selectedUsers.forEach(function (user) {
+				memberIds.push(user.id);
+			});
+
+			var btn = $('.new-chatroom-modal__submit');
+			btn.button('loading');
+
+			axios.post('chat/chatrooms/' + this.chatroom.id + '/members', {
+				members: memberIds
+			}).then(function (response) {
+				__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.members.added', response.data);
+				_this3.selectedUsers = [];
+				_this3.modal.modal('hide');
+				btn.button('reset');
+			}).catch(function () {
+				btn.button('reset');
+				alert('Failed to add members. Please try again');
+			});
+		},
+		changeUsersToReadonly: function changeUsersToReadonly(e) {
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('users.to.readonly', e);
+		},
+		loadAvailableUsers: function loadAvailableUsers() {
+			var _this4 = this;
+
+			axios.get('/chat/chatrooms/' + this.chatroom.id + '/available-users').then(function (response) {
+				_this4.availableUsers = response.data;
+				_this4.selectedUsers = [];
+				_this4.availableUsers.forEach(function (user, key) {
+					_this4.availableUsers[key].sel = false;
+				});
+			});
+		},
+		showModal: function showModal() {
+			this.modal.modal('show');
+		}
+	},
+	mounted: function mounted() {
+		var _this5 = this;
+
+		this.modal = $('#add-member-modal');
+
+		this.modal.on('shown.bs.modal', function () {
+			_this5.loadAvailableUsers();
+		});
+	}
+});
+
+/***/ }),
+/* 202 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-primary btn-sm pull-left",
+        attrs: { type: "button" },
+        on: { click: _vm.showModal }
+      },
+      [_vm._v("Add Members")]
+    ),
+    _vm._v(" "),
+    _c(
+      "a",
+      {
+        staticClass: "pull-right",
+        attrs: { href: "#" },
+        on: { click: _vm.changeUsersToReadonly }
+      },
+      [_c("small", [_vm._v("Readonly all..")])]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade add-member-modal",
+        attrs: {
+          id: "add-member-modal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "add-member-modal"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0, false, false),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("form", [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c("label", [_vm._v("Selected Members")]),
+                      _vm._v(" "),
+                      _c(
+                        "ul",
+                        { staticClass: "new-chatroom-modal__users" },
+                        _vm._l(_vm.selectedUsers, function(user) {
+                          return _c(
+                            "li",
+                            {
+                              staticClass:
+                                "new-chatroom-modal__user new-chatroom-modal__selected-users",
+                              on: {
+                                click: function($event) {
+                                  _vm.unselectUser(user.id)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n\t\t\t\t\t\t\t\t\t\t" +
+                                  _vm._s(user.name) +
+                                  "\n\t\t\t\t\t\t\t\t\t"
+                              )
+                            ]
+                          )
+                        })
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c("label", [_vm._v("Choose Members")]),
+                      _vm._v(" "),
+                      _c(
+                        "ul",
+                        {
+                          staticClass:
+                            "new-chatroom-modal__users new-chatroom-modal__users-list"
+                        },
+                        _vm._l(_vm.availableUsers, function(user) {
+                          return !user.sel
+                            ? _c(
+                                "li",
+                                {
+                                  staticClass: "new-chatroom-modal__user",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.selectUser(user.id)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n\t\t\t\t\t\t\t\t\t\t" +
+                                      _vm._s(user.name) +
+                                      "\n\t\t\t\t\t\t\t\t\t"
+                                  )
+                                ]
+                              )
+                            : _vm._e()
+                        })
+                      )
+                    ])
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-default",
+                    attrs: { type: "button", "data-dismiss": "modal" }
+                  },
+                  [_vm._v("Close")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "new-chatroom-modal__submit btn btn-primary",
+                    attrs: {
+                      type: "button",
+                      "data-loading-text": "Loading..."
+                    },
+                    on: { click: _vm.addMembers }
+                  },
+                  [_vm._v("Add")]
+                )
+              ])
+            ])
+          ]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title", attrs: { id: "myModalLabel" } }, [
+        _vm._v("Add New Members")
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d66c801a", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

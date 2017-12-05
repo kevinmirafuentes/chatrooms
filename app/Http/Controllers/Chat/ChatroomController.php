@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Http\Requests\Chat\CreateChatroomRequest;
 use Notification;
 use App\Notifications\Chat\ChatroomCreated;
+use App\Notifications\Chat\MemberAdded;
+use App\Notifications\Chat\MemberRemoved;
+use DB;
 
 class ChatroomController extends Controller
 {
@@ -32,5 +35,60 @@ class ChatroomController extends Controller
 
         $users = $request->users;
     	return response()->json($chatroom, 200);
+    }
+
+    public function availableUsers(Chatroom $chatroom)
+    {
+        $users = User::whereNotExists(function($query) use ($chatroom) {
+            $query->select(DB::raw(1))
+                ->from('chatroom_user')
+                ->whereRaw('user_id = users.id')
+                ->where('chatroom_id', $chatroom->id);
+        })
+        ->get();
+        return response()->json($users, 200);
+    }
+
+    public function addMembers(Chatroom $chatroom, Request $request)
+    {
+        $members = $request->members;
+        $member_users = [];
+
+        if ($members) {
+            $chatroom->users()->syncWithoutDetaching($members);
+
+            $current_members = $chatroom->users()->get()->filter(function($user) use ($request){
+                return $user->id <> $request->user()->id;
+            });
+
+            $users = $chatroom->users()->whereIn('user_id', $members)->get();
+            foreach ($users as $user) {
+                $member_users[] = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'permission' => $user->pivot->permission,
+                ];
+            }
+
+            Notification::send($current_members, new MemberAdded($chatroom, $member_users));
+        }
+
+        return response()->json($member_users, 200);
+    }
+
+    public function removeMember(Chatroom $chatroom, Request $request)
+    {
+        if ($request->user_id && $request->user()->canChangePermission($chatroom->id)) {
+            $current_members = $chatroom->users()->get()->filter(function($user) use ($request){
+                return $user->id <> $request->user()->id;
+            });
+
+            $chatroom->users()->detach($request->user_id);
+            Notification::send($current_members, new MemberRemoved($request->user_id));
+        }
+        return response()->json('', 200);
     }
 }

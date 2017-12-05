@@ -24,11 +24,12 @@
 			</div>
 			<div class="col-md-4">
 				<h3>Members</h3>
-				<div class="pull-right" v-if="this.isOwner">
-					<a href="#" @click="changeUsersToReadonly"><small>Readonly all..</small></a>
+				<div v-if="this.isOwner" class="members-controls">
+					<chatroom-member-controls :chatroom="chatroom"></chatroom-member-controls>
+					<div class="clearfix"></div>
 				</div>
 				<div class="clearfix"></div>
-				<chatroom-user v-for="member in members" :key="member.id" :permission="permission" :member="member" :isOwner="isOwner"></chatroom-user>
+				<chatroom-user v-for="member in members" :key="member.id" :permission="permission" :member="member" :isOwner="isOwner" :chatroom="chatroom"></chatroom-user>
 			</div>
 		</div>
 		<div v-if="!error && chatroom == null" class="chatroom__placeholder">
@@ -212,6 +213,22 @@
 					this.permission = e.permission;
 				}
 			})
+			.$on('users.to.readonly', (e) => {
+				this.changeUsersToReadonly(e)
+			})
+			.$on('chatroom.members.added', (members) => {
+				this.members = this.members.concat(members)
+			})
+			.$on('chatroom.members.added.notification', (data) => {
+				if (data.chatroom.id) {
+					this.members = this.members.concat(data.members)
+				}
+			})
+			.$on('member.removed', (id) => {
+				this.members = this.members.filter((member) => {
+					return member.id != id
+				})
+			})
 
 			// when message is resending, remove from list
 			// and set as the latest message
@@ -249,6 +266,10 @@
 			height: 400px;
 			min-height: 400px;
 			text-align: center;
+		}
+
+		.members-controls {
+			margin-bottom: 20px;
 		}
 	}
 </style>

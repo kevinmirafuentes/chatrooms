@@ -22,7 +22,7 @@ class MessageController extends Controller
                         ->messages()
                         ->with('user')
                         ->latest()
-                        ->paginate();
+                        ->paginate(1000);
 
         $results = [];
         foreach ($messages as $message) {

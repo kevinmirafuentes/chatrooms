@@ -1,12 +1,17 @@
 <template>
 	<div class="chatroom-member" :class="{ 'chatroom-member--online': isOnline }">
 		<a href="#" class="chatroom-member__name">{{ member.name }}</a>
-		<a href="#"
-			class="pull-right chatroom-member__readonly badge"
-			:class="{ 'chatroom-member__readonly--active': member.permission === 1 }"
-			@click="toggleReadonlyPermission(member)"
-			v-if="isOwner"
-		><small>Readonly</small></a>
+		<div class="pull-right" v-if="isOwner">
+			<a href="#" class="chatroom-member__remove" @click="removeUser(member.id, $event)">
+				<i class="glyphicon glyphicon-remove text-danger"></i>
+			</a>
+			<a href="#"
+				class="chatroom-member__readonly badge"
+				:class="{ 'chatroom-member__readonly--active': member.permission === 1 }"
+				@click="toggleReadonlyPermission(member, $event)">
+				<small>Readonly</small>
+			</a>
+		</div>
 	</div>
 </template>
 
@@ -14,14 +19,15 @@
 	import Bus from '../../bus'
 
 	export default {
-		props: ['member', 'permission', 'isOwner'],
+		props: ['member', 'permission', 'isOwner', 'chatroom'],
 		data () {
 			return {
 				isOnline: false
 			};
 		},
 		methods: {
-			toggleReadonlyPermission (user) {
+			toggleReadonlyPermission (user, e) {
+				e.preventDefault()
 				Bus.$emit('member.toggle-readonly', user.id)
 			},
 			updateStatus () {
@@ -30,6 +36,14 @@
 				} else {
 					this.isOnline = false
 				}
+			},
+			removeUser (id, e) {
+				e.preventDefault()
+				Bus.$emit('member.removed', id)
+
+				axios.post('/chat/chatrooms/'+this.chatroom.id+'/remove-member', {
+					user_id: id
+				})
 			}
 		},
 		mounted () {
@@ -79,5 +93,13 @@
 			white-space: nowrap;
 			overflow: hidden;
 		}
+
+		&__remove {
+			display: none;
+		}
+
+		&:hover &__remove {
+			display: inline;
+		};
 	}
 </style>

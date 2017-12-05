@@ -30,7 +30,7 @@
 								<div class="col-md-6">
 									<label>Choose Members</label>
 									<ul class="new-chatroom-modal__users new-chatroom-modal__users-list">
-										<li class="new-chatroom-modal__user" v-for="user in availableUsers" @click="selectUser(user.id)">
+										<li class="new-chatroom-modal__user" v-for="user in availableUsers" @click="selectUser(user.id)" v-if="!user.sel">
 											{{ user.name }}
 										</li>
 									</ul>
@@ -76,20 +76,24 @@
 			},
 			unselectUser (id) {
 				this.selectedUsers = this.selectedUsers.filter((user) => {
-					return user.id !== id
+					let check = user.id !== id
+
+					this.availableUsers.forEach((u, k) => {
+						if (u.id === user.id) {
+							this.availableUsers[k].sel = false
+						}
+					})
+
+					return check
 				})
 			},
 			selectUser (id) {
-				for (let i = 0; i <= this.availableUsers.length; i++) {
-					let selectedUser = this.availableUsers[i]
-					if (id === selectedUser.id) {
-						this.selectedUsers.push(selectedUser)
-						this.availableUsers = this.availableUsers.filter((user) => {
-							return user.id !== id
-						})
-						break
+				this.availableUsers.forEach((user, key) => {
+					if (id === user.id) {
+						this.selectedUsers.push(user)
+						this.availableUsers[key].sel = true
 					}
-				}
+				})
 			},
 			send (e) {
 				e.preventDefault()
@@ -136,6 +140,9 @@
 			})
 
 			Bus.$on('create-chatroom.users-loaded', (users) => {
+				users.forEach((user, key) => {
+					users[key].sel = false
+				})
 				this.availableUsers = users
 				this.selectedUsers = []
 			})
