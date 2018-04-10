@@ -59,12 +59,8 @@
 
 <style lang="scss">
 	.chatrooms {
-		border-radius: 3px;
-		border: 1px solid #d3e0e9;
-		background-color: #fff;
 		padding: 10px;
 		margin: 0;
-		max-height: 415px;
 		overflow-y: auto;
 
 		&__link {

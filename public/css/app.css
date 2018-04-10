@@ -8350,3 +8350,24 @@ button.close {
   }
 }
 
+.wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+}
+
+#sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  min-height: 100vh;
+}
+
+#content {
+  background: #fff;
+  width: 100%;
+  padding: 10px 20px;
+}
+
