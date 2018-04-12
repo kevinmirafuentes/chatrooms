@@ -1911,7 +1911,7 @@ function loadLocale(name) {
         try {
             oldLocale = globalLocale._abbr;
             var aliasedRequire = require;
-            __webpack_require__(174)("./" + name);
+            __webpack_require__(172)("./" + name);
             getSetGlobalLocale(oldLocale);
         } catch (e) {}
     }
@@ -28073,7 +28073,7 @@ return zhTw;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(135);
-module.exports = __webpack_require__(194);
+module.exports = __webpack_require__(195);
 
 
 /***/ }),
@@ -28099,11 +28099,11 @@ window.Vue = __webpack_require__(15);
 
 Vue.component('chatrooms', __webpack_require__(164));
 Vue.component('chatroom', __webpack_require__(170));
-Vue.component('chatroom-instances', __webpack_require__(203));
-Vue.component('chatroom-message', __webpack_require__(176));
-Vue.component('chatroom-user', __webpack_require__(181));
-Vue.component('create-chatroom-modal', __webpack_require__(186));
-Vue.component('chatroom-member-controls', __webpack_require__(191));
+Vue.component('chatroom-instances', __webpack_require__(174));
+Vue.component('chatroom-message', __webpack_require__(179));
+Vue.component('chatroom-user', __webpack_require__(182));
+Vue.component('create-chatroom-modal', __webpack_require__(187));
+Vue.component('chatroom-member-controls', __webpack_require__(192));
 
 var app = new Vue({
   el: '#app'
@@ -64239,6 +64239,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		return {
 			chatrooms: [],
 			selectedChatroom: null,
+			selectedChatrooms: [],
 			showCreateChatroomModal: false
 		};
 	},
@@ -64250,23 +64251,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatrooms.loaded', response.data);
 		});
 
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.selected', function (chatroom) {
-			_this.selectedChatroom = chatroom.id;
-		}).$on('chatroom.created', function (chatroom) {
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.created', function (chatroom) {
 			_this.chatrooms.unshift(chatroom);
-		}).$on('chatroom.unread.changed', function (data) {
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.unread.changed', function (data) {
 			_this.chatrooms.forEach(function (chatroom, key) {
 				if (chatroom.id === data.chatroom) {
 					_this.chatrooms[key].unread_messages = data.unread_messages;
 				}
 			});
 		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.closed', function (id) {
+			var index = _this.selectedChatrooms.indexOf(id);
+			_this.selectedChatrooms.splice(index, 1);
+		});
 	},
 
 	methods: {
+		isOpenChatroom: function isOpenChatroom(id) {
+			return this.selectedChatrooms.indexOf(id) != -1;
+		},
 		selectChatroom: function selectChatroom(chatroom, event) {
 			event.preventDefault();
-			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.selected', chatroom);
+			if (this.isOpenChatroom(chatroom.id)) {
+				return;
+			}
+
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.opened', chatroom);
+
+			this.selectedChatrooms.push(chatroom.id);
 		}
 	}
 });
@@ -64294,7 +64309,7 @@ var render = function() {
             {
               staticClass: "chatrooms__link",
               class: {
-                "chatrooms__link--selected": _vm.selectedChatroom == chatroom.id
+                "chatrooms__link--selected": _vm.isOpenChatroom(chatroom.id)
               },
               attrs: { href: "#" },
               on: {
@@ -64335,19 +64350,15 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(171)
-}
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(173)
+var __vue_script__ = __webpack_require__(171)
 /* template */
-var __vue_template__ = __webpack_require__(175)
+var __vue_template__ = __webpack_require__(173)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = injectStyle
+var __vue_styles__ = null
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -64384,46 +64395,6 @@ module.exports = Component.exports
 
 /***/ }),
 /* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(172);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("606d34d5", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-081f6fa3\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./Chatroom.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-081f6fa3\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./Chatroom.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 172 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "\n.chatroom {\n  border: 1px solid #d3e0e9;\n  background-color: #fff;\n  margin-bottom: 20px;\n}\n.chatroom__header {\n    background: #3097D1;\n    padding: 10px;\n    color: #fff;\n}\n.chatroom__header span.name {\n      width: 50%;\n      text-overflow: ellipsis;\n      overflow: hidden;\n      display: inline-block;\n      white-space: nowrap;\n}\n.chatroom__body {\n    height: 200px;\n    overflow-y: auto;\n    padding: 10px;\n}\n.chatroom__footer {\n    padding: 10px;\n}\n.chatroom__footer textarea {\n      width: 100%;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 173 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64431,6 +64402,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -64456,231 +64443,216 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	props: ['id', 'name'],
 	data: function data() {
 		return {
-			// chatroom: null,
-			// messages: [],
-			// nextPageUrl: null,
-			// error: null,
-			// members: [],
-			// body: '',
-			// permission: 0
+			messages: [],
+			nextPageUrl: null,
+			error: null,
+			members: [],
+			body: '',
+			permission: 0
 		};
 	},
 
 	methods: {
-		// loadMessages (chatroomId, event) {
-		// 	if (event) {
-		// 		event.preventDefault()
-		// 	}
+		loadMessages: function loadMessages(chatroomId, event) {
+			var _this = this;
 
-		// 	axios.get('/chat/chatrooms/'+chatroomId+'/messages')
-		// 	.then((response) => {
-		// 		Bus.$emit('chatroom.messages.loaded', response.data)
-		// 	})
-		// 	.catch(() => {
-		// 		this.error = 'Failed to load messages.'
-		// 	})
-		// },
-		// handleMessageInput (e) {
-		// 	if (e.keyCode === 13 && !e.shiftKey) {
-		// 		e.preventDefault()
-		// 		this.send()
-		// 	}
-		// },
-		// buildTempMessage () {
-		// 	let tempId = Date.now();
+			if (event) {
+				event.preventDefault();
+			}
 
-		// 	return {
-		// 		id: tempId,
-		// 		chatroom_id: this.chatroom.id,
-		// 		body: this.body,
-		// 		self_owned: true,
-		// 		sending: true,
-		// 		failed: false,
-		// 		read: true,
-		// 		created_at: moment().utc(0).format('YYYY-MM-DD HH:mm:ss'),
-		// 		user: {
-		// 			name: Backend.user.name
-		// 		}
-		// 	}
-		// },
-		// send () {
-		// 	if (!this.body || this.body.trim === '') {
-		// 		return
-		// 	}
+			axios.get('/chat/chatrooms/' + chatroomId + '/messages').then(function (response) {
+				var data = response.data;
 
-		// 	let tempMessage = this.buildTempMessage()
-		// 	Bus.$emit('message.added', tempMessage)
-		// },
-		// scrollToLatest () {
-		// 	this.$nextTick(function () {
-		// 		if (this.chatroom) {
-		// 			this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
-		// 		}
-		// 	})
-		// },
-		// sendMessagePool () {
-		// 	for (var i = this.messages.length; i > 0; i--) {
-		// 		let message = this.messages[i-1]
+				_this.messages = data.messages;
+				_this.members = data.members;
+				_this.permission = data.permission;
+				_this.nextPageUrl = data.next_page_url;
+				_this.error = null;
+				_this.scrollToLatest();
 
-		// 		if (message.failed || !message.sending) {
-		// 			continue
-		// 		}
+				_this.messages.forEach(function (message, key) {
+					_this.messages[key].read = true;
+				});
+			}).catch(function () {
+				_this.error = 'Failed to load messages.';
+			});
+		},
+		handleMessageInput: function handleMessageInput(e) {
+			if (e.keyCode === 13 && !e.shiftKey) {
+				e.preventDefault();
+				this.send();
+			}
+		},
+		buildTempMessage: function buildTempMessage() {
+			var tempId = Date.now();
 
-		// 		axios.post('/chat/chatrooms/'+this.chatroom.id+'/messages', {
-		// 			body: message.body
-		// 		})
-		// 		.then((response) => {
-		// 			Bus.$emit('message.saved', message)
-		// 			this.sendMessagePool()
-		// 		})
-		// 		.catch(() => {
-		// 			Bus.$emit('message.failed', message)
-		// 			this.sendMessagePool()
-		// 		})
-		// 	}
-		// },
-		// changeUsersToReadonly (e) {
-		// 	e.preventDefault()
+			return {
+				id: tempId,
+				chatroom_id: this.id,
+				body: this.body,
+				self_owned: true,
+				sending: true,
+				failed: false,
+				read: true,
+				created_at: __WEBPACK_IMPORTED_MODULE_1_moment___default()().utc(0).format('YYYY-MM-DD HH:mm:ss'),
+				user: {
+					name: Backend.user.name
+				}
+			};
+		},
+		send: function send() {
+			if (!this.body || this.body.trim === '') {
+				return;
+			}
 
-		// 	let users = [];
+			var tempMessage = this.buildTempMessage();
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added.' + this.id, tempMessage);
+		},
+		scrollToLatest: function scrollToLatest() {
+			this.$nextTick(function () {
+				this.$refs['messages' + this.id].scrollTop = this.$refs['messages' + this.id].scrollHeight;
+			});
+		},
+		sendMessagePool: function sendMessagePool() {
+			var _this2 = this;
 
-		// 	this.members.forEach((user) => {
-		// 		users.push(user.id)
-		// 	})
+			var _loop = function _loop() {
+				var message = _this2.messages[i - 1];
 
-		// 	let params = {
-		// 		users: users,
-		// 		chatroom: this.chatroom.id
-		// 	};
+				if (message.failed || !message.sending) {
+					return 'continue';
+				}
 
-		// 	axios.post('/chat/users/to-readonly', params)
-		// 	.then((response) => {
-		// 		for (var i=0; i<this.members.length; i++) {
-		// 			this.members[i].permission = 1;
-		// 		}
-		// 	})
-		// 	.catch(() => {})
-		// },
-		// ping () {
-		// 	axios.get('/chat/chatrooms/'+this.chatroom.id+'/ping')
-		// }
+				axios.post('/chat/chatrooms/' + _this2.id + '/messages', {
+					body: message.body
+				}).then(function (response) {
+					__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.saved.' + _this2.id, message);
+					_this2.sendMessagePool();
+				}).catch(function () {
+					__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.failed.' + _this2.id, message);
+					_this2.sendMessagePool();
+				});
+			};
+
+			for (var i = this.messages.length; i > 0; i--) {
+				var _ret = _loop();
+
+				if (_ret === 'continue') continue;
+			}
+		},
+		changeUsersToReadonly: function changeUsersToReadonly(e) {
+			var _this3 = this;
+
+			e.preventDefault();
+
+			var users = [];
+
+			this.members.forEach(function (user) {
+				users.push(user.id);
+			});
+
+			var params = {
+				users: users,
+				chatroom: this.id
+			};
+
+			axios.post('/chat/users/to-readonly', params).then(function (response) {
+				for (var i = 0; i < _this3.members.length; i++) {
+					_this3.members[i].permission = 1;
+				}
+			}).catch(function () {});
+		},
+		ping: function ping() {
+			axios.get('/chat/chatrooms/' + this.id + '/ping');
+		}
 	},
 	mounted: function mounted() {
-		console.log('id: ' + this.id);
-		// Bus.$on('chatroom.selected', (chatroom) => {
-		// 	this.chatroom = chatroom
-		// 	this.isOwner = chatroom.user_id == Backend.user.id
-		// 	this.loadMessages(chatroom.id)
-		// 	Bus.$emit('chatroom.entered', chatroom.id)
+		var _this4 = this;
 
-		// 	Bus.$emit('chatroom.unread.changed', {
-		// 		chatroom: chatroom.id,
-		// 		unread_messages: 0
-		// 	})
-		// })
-		// .$on('chatroom.messages.loaded', (data) => {
-		// 	this.messages = data.messages
-		// 	this.members = data.members
-		// 	this.permission = data.permission
-		// 	this.nextPageUrl = data.next_page_url
-		// 	this.error = null
-		// 	this.scrollToLatest()
+		this.loadMessages(this.id);
 
-		// 	this.messages.forEach((message, key) => {
-		// 		this.messages[key].read = true
-		// 	})
-		// })
-		// .$on('message.added', (message) => {
-		// 	if (!this.chatroom || message.chatroom_id !== this.chatroom.id) {
-		// 		return
-		// 	}
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('message.added.' + this.id, function (message) {
+			if (!message.read) {
+				_this4.ping();
+				__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.unread.changed', {
+					chatroom: _this4.id,
+					unread_messages: 0
+				});
+			}
 
-		// 	if (!message.read) {
-		// 		this.ping()
-		// 		Bus.$emit('chatroom.unread.changed', {
-		// 			chatroom: this.chatroom.id,
-		// 			unread_messages: 0
-		// 		})
-		// 	}
+			message.read = true;
+			_this4.messages.unshift(message);
+			_this4.body = null;
 
-		// 	message.read = true
-		// 	this.messages.unshift(message)
-		// 	this.body = null
+			_this4.scrollToLatest();
+			_this4.sendMessagePool();
+		});
 
-		// 	this.scrollToLatest()
-		// 	this.sendMessagePool()
-		// })
-		// .$on('message.saved', (message) => {
-		// 	for (var i = 0; i < this.messages.length; i++) {
-		// 		if (this.messages[i].id === message.id) {
-		// 			this.messages[i].failed = false
-		// 			this.messages[i].sending = false
-		// 		}
-		// 	}
-		// })
-		// .$on('message.failed', (message) => {
-		// 	for (var i = 0; i < this.messages.length; i++) {
-		// 		if (this.messages[i].id === message.id) {
-		// 			this.messages[i].failed = true
-		// 			this.messages[i].sending = false
-		// 			this.scrollToLatest()
-		// 		}
-		// 	}
-		// })
-		// .$on('member.toggle-readonly', (id) => {
-		// 	this.members.forEach((user, key) => {
-		// 		if (user.id === id) {
-		// 			let permission = this.members[key].permission;
-		// 			this.members[key].permission = permission === 1 ? 0 : 1;
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('message.saved.' + this.id, function (message) {
+			for (var i = 0; i < _this4.messages.length; i++) {
+				if (_this4.messages[i].id === message.id) {
+					_this4.messages[i].failed = false;
+					_this4.messages[i].sending = false;
+				}
+			}
+		});
 
-		// 			let params = {
-		// 				users: [id],
-		// 				chatroom: this.chatroom.id
-		// 			};
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('message.failed.' + this.id, function (message) {
+			for (var i = 0; i < _this4.messages.length; i++) {
+				if (_this4.messages[i].id === message.id) {
+					_this4.messages[i].failed = true;
+					_this4.messages[i].sending = false;
+					_this4.scrollToLatest();
+				}
+			}
+		});
 
-		// 			let target = permission === 1 ? '/chat/users/to-collab' : '/chat/users/to-readonly';
-		// 			axios.post(target, params)
-		// 				.catch(() => {
-		// 					// rollback
-		// 					this.members[key].permission = permission
-		// 				})
-		// 		}
-		// 	})
-		// })
-		// .$on('user-permission.changed', (e) => {
-		// 	if (e.chatroom == this.chatroom.id) {
-		// 		this.permission = e.permission;
-		// 	}
-		// })
-		// .$on('users.to.readonly', (e) => {
-		// 	this.changeUsersToReadonly(e)
-		// })
-		// .$on('chatroom.members.added', (members) => {
-		// 	this.members = this.members.concat(members)
-		// })
-		// .$on('chatroom.members.added.notification', (data) => {
-		// 	if (data.chatroom.id) {
-		// 		this.members = this.members.concat(data.members)
-		// 	}
-		// })
-		// .$on('member.removed', (id) => {
-		// 	this.members = this.members.filter((member) => {
-		// 		return member.id != id
-		// 	})
-		// })
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('member.toggle-readonly.' + this.id, function (id) {
+			_this4.members.forEach(function (user, key) {
+				if (user.id === id) {
+					var permission = _this4.members[key].permission;
+					_this4.members[key].permission = permission === 1 ? 0 : 1;
 
-		// // when message is resending, remove from list
-		// // and set as the latest message
-		// // message added is then triggered again to
-		// // attach the message and send to server
-		// Bus.$on('message.resending', (message) => {
-		// 	//console.log('message is removed', message)
-		// })
+					var params = {
+						users: [id],
+						chatroom: _this4.chatroom.id
+					};
+
+					var target = permission === 1 ? '/chat/users/to-collab' : '/chat/users/to-readonly';
+					axios.post(target, params).catch(function () {
+						// rollback
+						_this4.members[key].permission = permission;
+					});
+				}
+			});
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('user-permission.changed.' + this.id, function (e) {
+			_this4.permission = e.permission;
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('users.to.readonly.' + this.id, function (e) {
+			_this4.changeUsersToReadonly(e);
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.members.added.' + this.id, function (members) {
+			_this4.members = _this4.members.concat(members);
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.members.added.notification.' + this.id, function (data) {
+			_this4.members = _this4.members.concat(data.members);
+		});
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('member.removed.' + this.id, function (id) {
+			_this4.members = _this4.members.filter(function (member) {
+				return member.id != id;
+			});
+		});
 	}
 });
 
 /***/ }),
-/* 174 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -64935,10 +64907,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 174;
+webpackContext.id = 172;
 
 /***/ }),
-/* 175 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -64948,16 +64920,67 @@ var render = function() {
   return _c("div", { staticClass: "col-sm-12" }, [
     _c("div", { staticClass: "chatroom" }, [
       _c("div", { staticClass: "chatroom__header" }, [
-        _c("span", { staticClass: "name" }, [
-          _vm._v(_vm._s(_vm.name + _vm.name + _vm.name))
-        ]),
+        _c("span", { staticClass: "name" }, [_vm._v(_vm._s(_vm.name))]),
         _vm._v(" "),
-        _vm._m(0, false, false)
+        _c("div", { staticClass: "pull-right" }, [
+          _vm._m(0, false, false),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "chatroom__close ",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  _vm.$emit("close")
+                }
+              }
+            },
+            [_c("i", { staticClass: "glyphicon glyphicon-remove" })]
+          )
+        ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "chatroom__body" }),
+      _c(
+        "div",
+        { ref: "messages" + _vm.id, staticClass: "chatroom__body" },
+        _vm._l(_vm.messages.slice().reverse(), function(message) {
+          return _c("chatroom-message", {
+            key: message.id,
+            attrs: { message: message }
+          })
+        })
+      ),
       _vm._v(" "),
-      _vm._m(1, false, false)
+      _c("div", { staticClass: "chatroom__footer" }, [
+        _c("textarea", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.body,
+              expression: "body"
+            }
+          ],
+          staticClass: "form-control",
+          domProps: { value: _vm.body },
+          on: {
+            keydown: _vm.handleMessageInput,
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.body = $event.target.value
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c("span", { staticClass: "chatroom__helptext" }, [
+          _vm._v(
+            "\n\t\t\t\tHit return to send or Shift + Return for a new line\n\t\t\t"
+          )
+        ])
+      ])
     ])
   ])
 }
@@ -64966,16 +64989,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("a", { staticClass: "chatroom__close", attrs: { href: "#" } }, [
-      _c("i", { staticClass: "glyphicon glyphicon-remove" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "chatroom__footer" }, [
-      _c("textarea", { staticClass: "form-control" })
+    return _c("a", { staticClass: "chatroom__members", attrs: { href: "" } }, [
+      _c("i", { staticClass: "glyphicon glyphicon-user" })
     ])
   }
 ]
@@ -64989,23 +65004,192 @@ if (false) {
 }
 
 /***/ }),
-/* 176 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(177)
+  __webpack_require__(175)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(179)
+var __vue_script__ = __webpack_require__(177)
 /* template */
-var __vue_template__ = __webpack_require__(180)
+var __vue_template__ = __webpack_require__(178)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/chat/ChatroomInstances.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-16d6314b", Component.options)
+  } else {
+    hotAPI.reload("data-v-16d6314b", Component.options)
+' + '  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 175 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(176);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(5)("3137ee06", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-16d6314b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomInstances.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-16d6314b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomInstances.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 177 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	data: function data() {
+		return {
+			windows: []
+		};
+	},
+
+	methods: {
+		closeWindow: function closeWindow(index) {
+			var id = this.windows[index].id;
+			this.windows.splice(index, 1);
+
+			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.closed', id);
+		}
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.opened', function (chatroom) {
+			_this.windows.push(chatroom);
+		});
+	}
+});
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "row" },
+    _vm._l(_vm.windows, function(window, index) {
+      return _c("chatroom", {
+        key: window.id,
+        staticClass: "col-md-4",
+        attrs: { id: window.id, name: window.name },
+        on: {
+          close: function($event) {
+            _vm.closeWindow(index)
+          }
+        }
+      })
+    })
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-16d6314b", module.exports)
+  }
+}
+
+/***/ }),
+/* 179 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(180)
+/* template */
+var __vue_template__ = __webpack_require__(181)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -65041,53 +65225,15 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(178);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("6261768d", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43138f94\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomMessage.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43138f94\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomMessage.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 178 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "\n.chatroom-message {\n  border-bottom: 1px solid #d3e0e9;\n  color: #000;\n  padding: 10px;\n}\n.chatroom-message--own {\n    background: #d6eefb;\n}\n.chatroom-message--is-sending {\n    opacity: 0.5;\n}\n.chatroom-message__error {\n    color: #dc3545;\n}\n.chatroom-message__head {\n    font-weight: bold;\n}\n.chatroom-message__body {\n    min-height: 50px;\n    white-space: pre-wrap;\n}\n.chatroom-message:last-child {\n    border-bottom: none;\n}\n.chatroom-message__date {\n    font-size: 10px;\n    font-weight: normal;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
+//
+//
 //
 //
 //
@@ -65134,7 +65280,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -65144,27 +65290,26 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "chatroom-message",
+      staticClass: "message",
       class: {
-        "chatroom-message--own": _vm.message.self_owned,
-        "chatroom-message--is-sending": _vm.message.sending
+        own: _vm.message.self_owned,
+        sending: _vm.message.sending
       }
     },
     [
-      _c("div", { staticClass: "chatroom-message__head" }, [
-        _c("div", [_vm._v(_vm._s(_vm.message.user.name))]),
-        _vm._v(" "),
-        _c("div", { staticClass: "chatroom-message__date" }, [
+      _c("div", { staticClass: "message__header" }, [
+        _vm._v("\n\t\t" + _vm._s(_vm.message.user.name) + "\n\t\t"),
+        _c("div", { staticClass: "message__date" }, [
           _vm._v(_vm._s(_vm.formatedDate))
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "chatroom-message__body" }, [
+      _c("div", { staticClass: "message__body" }, [
         _vm._v(_vm._s(_vm.message.body))
       ]),
       _vm._v(" "),
       typeof _vm.message.failed != "undefined" && _vm.message.failed
-        ? _c("div", { staticClass: "chatroom-message__error text-right" }, [
+        ? _c("div", { staticClass: "message__error text-right" }, [
             _c("small", [_vm._v("Failed")])
           ])
         : _vm._e()
@@ -65182,19 +65327,19 @@ if (false) {
 }
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(182)
+  __webpack_require__(183)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(184)
+var __vue_script__ = __webpack_require__(185)
 /* template */
-var __vue_template__ = __webpack_require__(185)
+var __vue_template__ = __webpack_require__(186)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -65234,13 +65379,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(183);
+var content = __webpack_require__(184);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -65260,7 +65405,7 @@ if(false) {
 }
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(undefined);
@@ -65274,7 +65419,7 @@ exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatro
 
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65342,7 +65487,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -65413,19 +65558,19 @@ if (false) {
 }
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(187)
+  __webpack_require__(188)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(189)
+var __vue_script__ = __webpack_require__(190)
 /* template */
-var __vue_template__ = __webpack_require__(190)
+var __vue_template__ = __webpack_require__(191)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -65465,13 +65610,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(188);
+var content = __webpack_require__(189);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -65491,7 +65636,7 @@ if(false) {
 }
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(undefined);
@@ -65505,7 +65650,7 @@ exports.push([module.i, "\n.new-chatroom-modal-button {\n  margin: 10px 0;\n}\n.
 
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65670,7 +65815,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -65871,15 +66016,15 @@ if (false) {
 }
 
 /***/ }),
-/* 191 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(192)
+var __vue_script__ = __webpack_require__(193)
 /* template */
-var __vue_template__ = __webpack_require__(193)
+var __vue_template__ = __webpack_require__(194)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -65919,7 +66064,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 192 */
+/* 193 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66062,7 +66207,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 193 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -66244,184 +66389,10 @@ if (false) {
 }
 
 /***/ }),
-/* 194 */
+/* 195 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 195 */,
-/* 196 */,
-/* 197 */,
-/* 198 */,
-/* 199 */,
-/* 200 */,
-/* 201 */,
-/* 202 */,
-/* 203 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(204)
-}
-var normalizeComponent = __webpack_require__(3)
-/* script */
-var __vue_script__ = __webpack_require__(206)
-/* template */
-var __vue_template__ = __webpack_require__(207)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/chat/ChatroomInstances.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-16d6314b", Component.options)
-  } else {
-    hotAPI.reload("data-v-16d6314b", Component.options)
-' + '  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 204 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(205);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("3137ee06", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-16d6314b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomInstances.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-16d6314b\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomInstances.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 205 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 206 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bus__ = __webpack_require__(2);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	data: function data() {
-		return {
-			windows: []
-		};
-	},
-
-	methods: {},
-	mounted: function mounted() {
-		var _this = this;
-
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('chatroom.opened', function (chatroom) {
-			_this.windows.push(chatroom);
-		});
-
-		// test
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.opened', { id: 1, name: 'Chatroom #1' });
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.opened', { id: 2, name: 'Chatroom #2' });
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.opened', { id: 3, name: 'Chatroom #3' });
-		__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.opened', { id: 4, name: 'Chatroom #4' });
-	}
-});
-
-/***/ }),
-/* 207 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "row" },
-    _vm._l(_vm.windows, function(window) {
-      return _c("chatroom", {
-        key: window.id,
-        staticClass: "col-md-4",
-        attrs: { id: window.id, name: window.name }
-      })
-    })
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-16d6314b", module.exports)
-  }
-}
 
 /***/ })
 /******/ ]);

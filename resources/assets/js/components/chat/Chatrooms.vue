@@ -8,7 +8,7 @@
 			<a href="#"
 				@click="selectChatroom(chatroom, $event)"
 				class="chatrooms__link"
-				:class="{ 'chatrooms__link--selected': selectedChatroom == chatroom.id }"
+				:class="{ 'chatrooms__link--selected': isOpenChatroom(chatroom.id) }"
 			>
 				{{ chatroom.name }}
 				<i class="badge pull-right unread-messages-counter" v-if="chatroom.unread_messages">{{ chatroom.unread_messages }}</i>
@@ -25,6 +25,7 @@
 			return {
 				chatrooms: [],
 				selectedChatroom: null,
+				selectedChatrooms: [],
 				showCreateChatroomModal: false
 			}
 		},
@@ -34,24 +35,36 @@
 				Bus.$emit('chatrooms.loaded', response.data)
 			})
 
-			Bus.$on('chatroom.selected', (chatroom) => {
-				this.selectedChatroom = chatroom.id;
-			})
-			.$on('chatroom.created', (chatroom) => {
+			Bus.$on('chatroom.created', (chatroom) => {
 				this.chatrooms.unshift(chatroom)
 			})
-			.$on('chatroom.unread.changed', (data) => {
+
+			Bus.$on('chatroom.unread.changed', (data) => {
 				this.chatrooms.forEach((chatroom, key) => {
 					if (chatroom.id === data.chatroom) {
 						this.chatrooms[key].unread_messages = data.unread_messages
 					}
 				})
 			})
+
+			Bus.$on('chatroom.closed', id => {
+				var index = this.selectedChatrooms.indexOf(id)
+				this.selectedChatrooms.splice(index, 1);
+			})
 		},
 		methods: {
-			selectChatroom: (chatroom, event) => {
+			isOpenChatroom (id) {
+				return this.selectedChatrooms.indexOf(id) != -1
+			},
+			selectChatroom (chatroom, event) {
 				event.preventDefault()
-				Bus.$emit('chatroom.selected', chatroom)
+				if (this.isOpenChatroom(chatroom.id)) {
+					return
+				}
+
+				Bus.$emit('chatroom.opened', chatroom)
+
+				this.selectedChatrooms.push(chatroom.id)
 			}
 		}
 	}

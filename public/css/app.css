@@ -8371,3 +8371,74 @@ button.close {
   padding: 10px 20px;
 }
 
+.chatroom {
+  border: 1px solid #d3e0e9;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.chatroom__header {
+  background: #3097D1;
+  padding: 10px;
+  color: #fff;
+}
+
+.chatroom__header span.name {
+  width: 50%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.chatroom__members,
+.chatroom__close {
+  color: #fff;
+  margin-left: 10px;
+}
+
+.chatroom__body {
+  height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chatroom__footer {
+  padding: 10px;
+}
+
+.chatroom__footer textarea {
+  width: 100%;
+}
+
+.chatroom__helptext {
+  font-size: 10px;
+  text-align: right;
+}
+
+.message {
+  border-bottom: 1px solid #d3e0e9;
+  padding: 10px 0;
+}
+
+.message__header {
+  font-weight: bold;
+}
+
+.message__error {
+  color: #dc3545;
+}
+
+.message__body {
+  white-space: pre-wrap;
+}
+
+.message:last-child {
+  border-bottom: none;
+}
+
+.message__date {
+  font-size: 10px;
+  font-weight: normal;
+}
+
