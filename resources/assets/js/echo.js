@@ -37,7 +37,7 @@ Bus.$on('App.Notifications.Chat.ChatroomCreated', (e) => {
 })
 .$on('App.Notifications.Chat.MessageCreated', (e) => {
 	e.message.read = false
-	Bus.$emit('message.added', e.message)
+	Bus.$emit('message.added.'+e.chatroom_id, e.message)
 })
 .$on('App.Notifications.Chat.UnreadMessagesCount', (e) => {
 	Bus.$emit('chatroom.unread.changed', {
