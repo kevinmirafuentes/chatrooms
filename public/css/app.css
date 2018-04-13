@@ -8416,6 +8416,16 @@ button.close {
   text-align: right;
 }
 
+.chatroom__members_list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  padding: 10px;
+}
+
 .message {
   border-bottom: 1px solid #d3e0e9;
   padding: 10px 0;

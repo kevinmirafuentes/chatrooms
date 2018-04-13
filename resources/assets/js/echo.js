@@ -35,25 +35,31 @@ if (Backend.user.id) {
 Bus.$on('App.Notifications.Chat.ChatroomCreated', (e) => {
 	Bus.$emit('chatroom.created', e.chatroom)
 })
-.$on('App.Notifications.Chat.MessageCreated', (e) => {
+
+Bus.$on('App.Notifications.Chat.MessageCreated', (e) => {
+	console.log(e);
 	e.message.read = false
-	Bus.$emit('message.added.'+e.chatroom_id, e.message)
+	Bus.$emit('message.added.'+e.message.chatroom_id, e.message)
 })
-.$on('App.Notifications.Chat.UnreadMessagesCount', (e) => {
+
+Bus.$on('App.Notifications.Chat.UnreadMessagesCount', (e) => {
 	Bus.$emit('chatroom.unread.changed', {
 		chatroom: e.chatroom,
 		unread_messages: e.unread
 	})
 })
-.$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
+
+Bus.$on('App.Notifications.Chat.UserPermissionChanged', (e) => {
 	Bus.$emit('user-permission.changed', e.data)
 })
-.$on('App.Notifications.Chat.MemberAdded', (e) => {
+
+Bus.$on('App.Notifications.Chat.MemberAdded', (e) => {
 	Bus.$emit('chatroom.members.added.notification', {
 		members: e.members,
 		chatroom: e.chatroom
 	});
 })
-.$on('App.Notifications.Chat.MemberRemoved', (e) => {
+
+Bus.$on('App.Notifications.Chat.MemberRemoved', (e) => {
 	Bus.$emit('member.removed', e.user_id)
 })

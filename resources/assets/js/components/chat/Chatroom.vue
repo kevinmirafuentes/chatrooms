@@ -6,7 +6,11 @@
 
 				<div class="pull-right">
 					<a href=""
-						class="chatroom__members">
+						class="chatroom__members dropdown-toggle"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+						@click="toggleMembersList()">
 						<i class="glyphicon glyphicon-user"></i>
 					</a>
 
@@ -17,15 +21,23 @@
 					</a>
 				</div>
 			</div>
-			<div class="chatroom__body" :ref="'messages' + id">
-				<chatroom-message v-for="message in messages.slice().reverse()" :key="message.id" :message="message"></chatroom-message>
-			</div>
-			<div class="chatroom__footer">
-				<textarea
-					class="form-control" v-model="body" @keydown="handleMessageInput"></textarea>
-				<span class="chatroom__helptext">
-					Hit return to send or Shift + Return for a new line
-				</span>
+			<div style="position: relative; overflow-y: auto;">
+				<div class="chatroom__body" :ref="'messages' + id">
+					<chatroom-message v-for="message in messages.slice().reverse()" :key="message.id" :message="message"></chatroom-message>
+				</div>
+				<div class="chatroom__footer">
+					<textarea
+						class="form-control" v-model="body" @keydown="handleMessageInput"></textarea>
+					<span class="chatroom__helptext">
+						Hit return to send or Shift + Return for a new line
+					</span>
+				</div>
+				<div class="chatroom__members_list" v-show="showMembers">
+					<h3>Members</h3>
+					<ul>
+						<li v-for="member in members">{{ member.name }}</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -44,10 +56,14 @@
 				error: null,
 				members: [],
 				body: '',
-				permission: 0
+				permission: 0,
+				showMembers: false,
 			}
 		},
 		methods: {
+			toggleMembersList() {
+				this.showMembers = !this.showMembers;
+			},
 			loadMessages (chatroomId, event) {
 				if (event) {
 					event.preventDefault()

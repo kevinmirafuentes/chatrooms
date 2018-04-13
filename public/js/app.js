@@ -63809,22 +63809,33 @@ if (Backend.user.id) {
 
 __WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.ChatroomCreated', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.created', e.chatroom);
-}).$on('App.Notifications.Chat.MessageCreated', function (e) {
+});
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.MessageCreated', function (e) {
+	console.log(e);
 	e.message.read = false;
-	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added', e.message);
-}).$on('App.Notifications.Chat.UnreadMessagesCount', function (e) {
+	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('message.added.' + e.message.chatroom_id, e.message);
+});
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.UnreadMessagesCount', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.unread.changed', {
 		chatroom: e.chatroom,
 		unread_messages: e.unread
 	});
-}).$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
+});
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.UserPermissionChanged', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('user-permission.changed', e.data);
-}).$on('App.Notifications.Chat.MemberAdded', function (e) {
+});
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.MemberAdded', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('chatroom.members.added.notification', {
 		members: e.members,
 		chatroom: e.chatroom
 	});
-}).$on('App.Notifications.Chat.MemberRemoved', function (e) {
+});
+
+__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$on('App.Notifications.Chat.MemberRemoved', function (e) {
 	__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.removed', e.user_id);
 });
 
@@ -64435,6 +64446,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -64448,11 +64471,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			error: null,
 			members: [],
 			body: '',
-			permission: 0
+			permission: 0,
+			showMembers: false
 		};
 	},
 
 	methods: {
+		toggleMembersList: function toggleMembersList() {
+			this.showMembers = !this.showMembers;
+		},
 		loadMessages: function loadMessages(chatroomId, event) {
 			var _this = this;
 
@@ -64923,7 +64950,24 @@ var render = function() {
         _c("span", { staticClass: "name" }, [_vm._v(_vm._s(_vm.name))]),
         _vm._v(" "),
         _c("div", { staticClass: "pull-right" }, [
-          _vm._m(0, false, false),
+          _c(
+            "a",
+            {
+              staticClass: "chatroom__members dropdown-toggle",
+              attrs: {
+                href: "",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              },
+              on: {
+                click: function($event) {
+                  _vm.toggleMembersList()
+                }
+              }
+            },
+            [_c("i", { staticClass: "glyphicon glyphicon-user" })]
+          ),
           _vm._v(" "),
           _c(
             "a",
@@ -64943,57 +64987,79 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { ref: "messages" + _vm.id, staticClass: "chatroom__body" },
-        _vm._l(_vm.messages.slice().reverse(), function(message) {
-          return _c("chatroom-message", {
-            key: message.id,
-            attrs: { message: message }
-          })
-        })
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "chatroom__footer" }, [
-        _c("textarea", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.body,
-              expression: "body"
-            }
-          ],
-          staticClass: "form-control",
-          domProps: { value: _vm.body },
-          on: {
-            keydown: _vm.handleMessageInput,
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+        { staticStyle: { position: "relative", "overflow-y": "auto" } },
+        [
+          _c(
+            "div",
+            { ref: "messages" + _vm.id, staticClass: "chatroom__body" },
+            _vm._l(_vm.messages.slice().reverse(), function(message) {
+              return _c("chatroom-message", {
+                key: message.id,
+                attrs: { message: message }
+              })
+            })
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "chatroom__footer" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.body,
+                  expression: "body"
+                }
+              ],
+              staticClass: "form-control",
+              domProps: { value: _vm.body },
+              on: {
+                keydown: _vm.handleMessageInput,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.body = $event.target.value
+                }
               }
-              _vm.body = $event.target.value
-            }
-          }
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "chatroom__helptext" }, [
-          _vm._v(
-            "\n\t\t\t\tHit return to send or Shift + Return for a new line\n\t\t\t"
+            }),
+            _vm._v(" "),
+            _c("span", { staticClass: "chatroom__helptext" }, [
+              _vm._v(
+                "\n\t\t\t\t\tHit return to send or Shift + Return for a new line\n\t\t\t\t"
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.showMembers,
+                  expression: "showMembers"
+                }
+              ],
+              staticClass: "chatroom__members_list"
+            },
+            [
+              _c("h3", [_vm._v("Members")]),
+              _vm._v(" "),
+              _c(
+                "ul",
+                _vm._l(_vm.members, function(member) {
+                  return _c("li", [_vm._v(_vm._s(member.name))])
+                })
+              )
+            ]
           )
-        ])
-      ])
+        ]
+      )
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { staticClass: "chatroom__members", attrs: { href: "" } }, [
-      _c("i", { staticClass: "glyphicon glyphicon-user" })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
