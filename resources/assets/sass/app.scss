@@ -90,3 +90,46 @@
 		font-weight: normal;
 	}
 }
+.chatroom-member {
+	position: relative;
+	margin: 0px 20px;
+	&--online {
+		&:before {
+			content: "";
+			display: block;
+			position: absolute;
+			width: 10px;
+			height: 10px;
+			left: -15px;
+			top: 5px;
+			background: #0fd40f;
+			border-radius: 50%;
+			overflow: hidden;
+		};
+	}
+
+	&__readonly {
+		opacity: 0.5;
+	}
+
+	&__readonly--active {
+		background: #3097D1;
+		opacity: 1;
+	}
+
+	&__name {
+		width: 60%;
+		display: inline-block;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	&__remove {
+		display: none;
+	}
+
+	&:hover &__remove {
+		display: inline;
+	};
+}

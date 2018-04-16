@@ -8452,3 +8452,46 @@ button.close {
   font-weight: normal;
 }
 
+.chatroom-member {
+  position: relative;
+  margin: 0px 20px;
+}
+
+.chatroom-member--online:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  left: -15px;
+  top: 5px;
+  background: #0fd40f;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.chatroom-member__readonly {
+  opacity: 0.5;
+}
+
+.chatroom-member__readonly--active {
+  background: #3097D1;
+  opacity: 1;
+}
+
+.chatroom-member__name {
+  width: 60%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.chatroom-member__remove {
+  display: none;
+}
+
+.chatroom-member:hover .chatroom-member__remove {
+  display: inline;
+}
+

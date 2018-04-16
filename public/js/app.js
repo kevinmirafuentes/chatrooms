@@ -64458,6 +64458,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -65044,15 +65047,20 @@ var render = function() {
               staticClass: "chatroom__members_list"
             },
             [
-              _c("h3", [_vm._v("Members")]),
+              _c("h4", [_vm._v("Members")]),
               _vm._v(" "),
-              _c(
-                "ul",
-                _vm._l(_vm.members, function(member) {
-                  return _c("li", [_vm._v(_vm._s(member.name))])
+              _vm._l(_vm.members, function(member) {
+                return _c("chatroom-user", {
+                  key: member.id,
+                  attrs: {
+                    permission: _vm.permission,
+                    member: member,
+                    chatroomId: _vm.id
+                  }
                 })
-              )
-            ]
+              })
+            ],
+            2
           )
         ]
       )
@@ -65397,10 +65405,6 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(183)
-}
 var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(185)
@@ -65409,7 +65413,7 @@ var __vue_template__ = __webpack_require__(186)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = injectStyle
+var __vue_styles__ = null
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -65445,46 +65449,8 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 183 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(184);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("458eb50c", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1fe4648e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomUser.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1fe4648e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./ChatroomUser.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 184 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "\n.chatroom-member {\n  position: relative;\n}\n.chatroom-member--online:before {\n    content: \"\";\n    display: block;\n    position: absolute;\n    width: 10px;\n    height: 10px;\n    left: -15px;\n    top: 5px;\n    background: #0fd40f;\n    border-radius: 50%;\n    overflow: hidden;\n}\n.chatroom-member__readonly {\n    opacity: 0.5;\n}\n.chatroom-member__readonly--active {\n    background: #3097D1;\n    opacity: 1;\n}\n.chatroom-member__name {\n    width: 60%;\n    display: inline-block;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n.chatroom-member__remove {\n    display: none;\n}\n.chatroom-member:hover .chatroom-member__remove {\n    display: inline;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 183 */,
+/* 184 */,
 /* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -65512,7 +65478,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['member', 'permission', 'isOwner', 'chatroom'],
+	props: ['member', 'permission', 'isOwner', 'chatroomId'],
 	data: function data() {
 		return {
 			isOnline: false
@@ -65522,7 +65488,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		toggleReadonlyPermission: function toggleReadonlyPermission(user, e) {
 			e.preventDefault();
-			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.toggle-readonly', user.id);
+			// Bus.$emit('member.toggle-readonly', user.id)
 		},
 		updateStatus: function updateStatus() {
 			if (window.online.includes(this.member.id)) {
@@ -65535,7 +65501,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			e.preventDefault();
 			__WEBPACK_IMPORTED_MODULE_0__bus__["a" /* default */].$emit('member.removed', id);
 
-			axios.post('/chat/chatrooms/' + this.chatroom.id + '/remove-member', {
+			axios.post('/chat/chatrooms/' + this.chatroomId + '/remove-member', {
 				user_id: id
 			});
 		}

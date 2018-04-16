@@ -19,7 +19,12 @@
 	import Bus from '../../bus'
 
 	export default {
-		props: ['member', 'permission', 'isOwner', 'chatroom'],
+		props: [
+			'member',
+			'permission',
+			'isOwner',
+			'chatroomId'
+		],
 		data () {
 			return {
 				isOnline: false
@@ -28,7 +33,7 @@
 		methods: {
 			toggleReadonlyPermission (user, e) {
 				e.preventDefault()
-				Bus.$emit('member.toggle-readonly', user.id)
+				// Bus.$emit('member.toggle-readonly', user.id)
 			},
 			updateStatus () {
 				if (window.online.includes(this.member.id)) {
@@ -41,7 +46,7 @@
 				e.preventDefault()
 				Bus.$emit('member.removed', id)
 
-				axios.post('/chat/chatrooms/'+this.chatroom.id+'/remove-member', {
+				axios.post('/chat/chatrooms/'+this.chatroomId+'/remove-member', {
 					user_id: id
 				})
 			}
@@ -57,49 +62,3 @@
 		}
 	}
 </script>
-
-<style lang="scss">
-	.chatroom-member {
-		position: relative;
-
-		&--online {
-			&:before {
-				content: "";
-				display: block;
-				position: absolute;
-				width: 10px;
-				height: 10px;
-				left: -15px;
-				top: 5px;
-				background: #0fd40f;
-				border-radius: 50%;
-				overflow: hidden;
-			};
-		}
-
-		&__readonly {
-			opacity: 0.5;
-		}
-
-		&__readonly--active {
-			background: #3097D1;
-			opacity: 1;
-		}
-
-		&__name {
-			width: 60%;
-			display: inline-block;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			overflow: hidden;
-		}
-
-		&__remove {
-			display: none;
-		}
-
-		&:hover &__remove {
-			display: inline;
-		};
-	}
-</style>

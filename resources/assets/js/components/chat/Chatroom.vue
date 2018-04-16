@@ -33,10 +33,13 @@
 					</span>
 				</div>
 				<div class="chatroom__members_list" v-show="showMembers">
-					<h3>Members</h3>
-					<ul>
-						<li v-for="member in members">{{ member.name }}</li>
-					</ul>
+					<h4>Members</h4>
+					<chatroom-user
+						v-for="member in members"
+						:key="member.id"
+						:permission="permission"
+						:member="member"
+						:chatroomId="id"></chatroom-user>
 				</div>
 			</div>
 		</div>
